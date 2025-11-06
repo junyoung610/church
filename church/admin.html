@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>관리자 페이지 | 샬롬교회</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <script>
+      if (localStorage.getItem("isLoggedIn") !== "true") {
+        alert("관리자만 접근 가능합니다.");
+        location.href = "login.html";
+      }
+    </script>
+
+    <header><h1>관리자 페이지</h1></header>
+    <section class="section">
+      <h2>공지사항 등록</h2>
+      <form id="postForm">
+        <input type="text" id="title" placeholder="제목" required /><br />
+        <textarea id="content" placeholder="내용" rows="6" required></textarea><br />
+        <button type="submit">등록</button>
+      </form>
+      <button onclick="logout()">로그아웃</button>
+    </section>
+
+    <script>
+      const postForm = document.getElementById("postForm");
+      postForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const post = {
+          title: document.getElementById("title").value,
+          content: document.getElementById("content").value,
+          date: new Date().toLocaleString(),
+        };
+        let posts = JSON.parse(localStorage.getItem("posts")) || [];
+        posts.push(post);
+        localStorage.setItem("posts", JSON.stringify(posts));
+        alert("게시글이 등록되었습니다.");
+      });
+
+      function logout() {
+        localStorage.removeItem("isLoggedIn");
+        alert("로그아웃 되었습니다.");
+        location.href = "login.html";
+      }
+    </script>
+
+    <footer><p>© 2025 샬롬교회</p></footer>
+  </body>
+</html>
