@@ -1,0 +1,113 @@
+/* --- 폼 페이지 전용 CSS --- */
+
+.form-page {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center;
+  min-height: 70vh; /* 화면 높이의 70% 이상을 차지하도록 설정 */
+  padding: 50px 20px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px; /* 폼 컨테이너의 최대 너비 */
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.form-container h2 {
+  color: #1e3b5e; /* 메인 컬러 */
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="password"],
+.input-group input[type="email"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #b8860b; /* 포커스 시 보조 컬러 */
+  outline: none;
+}
+
+.primary-btn {
+  width: 100%;
+  background-color: #1e3b5e; /* 메인 컬러 */
+  color: #ffffff;
+  padding: 15px;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.primary-btn:hover {
+  background-color: #2c4974;
+}
+
+.find-links {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.find-links a {
+  color: #666;
+  margin: 0 5px;
+}
+
+.find-links a:hover {
+  color: #b8860b;
+}
+
+.required-info {
+  font-size: 12px;
+  color: #b8860b;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+/* 새 폴더/css/form.css 파일 하단에 추가 */
+
+/* 마이페이지 정보 그룹 스타일 */
+.form-container .info-group {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee; /* 점선으로 구분 */
+}
+
+.form-container .info-group label {
+  font-size: 14px;
+  color: #555;
+  font-weight: normal;
+  margin-bottom: 2px;
+}
+
+.form-container .info-group p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e3b5e; /* 메인 컬러로 값 강조 */
+  margin-top: 5px;
+}

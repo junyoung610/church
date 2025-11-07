@@ -1,0 +1,109 @@
+@charset "UTF-8";
+header {
+  background-color: #1e3b5e; /* 메인 컬러: 네이비 블루 */
+  padding: 15px 0;
+  color: #ffffff;
+  border-bottom: 5px solid #b8860b; /* 보조 컬러: 골드로 포인트 */
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between; /* 로고, GNB, 유틸리티 메뉴를 양 끝으로 배치 */
+  align-items: center;
+}
+
+.logo a {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* GNB (메인 메뉴) 스타일 */
+.gnb > ul {
+  display: flex;
+}
+
+.gnb .menu-item {
+  position: relative; /* 서브 메뉴 배치를 위한 기준점 */
+  padding: 0 20px;
+}
+
+.gnb .menu-item > a {
+  display: block;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 10px 0;
+  transition: color 0.3s;
+}
+
+.gnb .menu-item > a:hover {
+  color: #b8860b; /* 호버 시 보조 컬러로 변경 */
+}
+
+/* 서브 메뉴 숨기기 및 디자인 (드롭다운 핵심) */
+.gnb .sub-menu {
+  display: none; /* 기본 숨기기 */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #2c4974; /* 1차 메뉴보다 약간 어두운 배경 */
+  min-width: 160px;
+  z-index: 100;
+  padding: 10px 0;
+  border-radius: 0 0 5px 5px;
+}
+
+.gnb .sub-menu a {
+  color: #ffffff;
+  padding: 8px 15px;
+  display: block;
+  font-weight: 400;
+}
+
+.gnb .sub-menu a:hover {
+  background-color: #b8860b;
+}
+
+/* 마우스 오버 시 서브 메뉴 보이기 (드롭다운 활성화) */
+.gnb .menu-item:hover > .sub-menu {
+  display: block;
+}
+
+/* 유틸리티 메뉴 */
+.util-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.util-menu a,
+.util-menu button {
+  color: #ffffff;
+  font-size: 14px;
+  padding: 5px 10px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  background: none;
+  width: 90px;
+  height: 35px;
+}
+
+footer {
+  background-color: #333333;
+  color: #aaaaaa;
+  padding: 30px 0;
+  font-size: 14px;
+}
+
+.footer-inner {
+  text-align: center;
+}
+
+.footer-inner address,
+.footer-inner p {
+  margin-bottom: 5px;
+}
+
+.footer-inner a {
+  color: #aaaaaa;
+}

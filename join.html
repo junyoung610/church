@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의정부길교회</title>
+    <link rel="shortcut icon" href="./common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="./css/Reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./common/header.css" />
+
+    <link rel="stylesheet" href="./css/form.css" />
+
+    <!-- script -->
+    <script src="./js/common.js" defer></script>
+
+    <!-- login script -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAk2ej1PQqu5uStG7tcqGDQ5LxYeitWY2U",
+        authDomain: "church-f6f22.firebaseapp.com",
+        projectId: "church-f6f22",
+        storageBucket: "church-f6f22.firebasestorage.app",
+        messagingSenderId: "848773880367",
+        appId: "1:848773880367:web:3e82746a59823ffcfb44da",
+        measurementId: "G-5P0HVNX47W",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+  <body>
+    <!-- header#header+main#main+footer#footer -->
+    <header id="header"></header>
+    <main class="form-page">
+      <section class="form-container">
+        <h2>회원가입</h2>
+        <form action="/api/register" method="POST" class="form-box">
+          <p class="required-info">필수 입력 항목</p>
+
+          <div class="input-group">
+            <label for="join-id">아이디 (이메일)</label>
+            <input
+              type="email"
+              id="join-id"
+              name="userEmail"
+              placeholder="example@church.org"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="join-pass">비밀번호</label>
+            <input type="password" id="join-pass" name="password" required />
+          </div>
+
+          <div class="input-group">
+            <label for="join-pass-confirm">비밀번호 확인</label>
+            <input type="password" id="join-pass-confirm" name="passwordConfirm" required />
+          </div>
+
+          <div class="input-group">
+            <label for="user-name">이름</label>
+            <input type="text" id="user-name" name="userName" required />
+          </div>
+
+          <button type="submit" class="primary-btn">가입 완료</button>
+        </form>
+      </section>
+    </main>
+    <footer id="footer"></footer>
+    <script src="./js/auth.js"></script>
+  </body>
+</html>
