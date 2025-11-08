@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 4-2. 게시글 로드 및 페이지네이션 구현 (쿼리 구문 오류 해결)
+    // 4-2. 게시글 로드 및 페이지네이션 구현
     db.collection("notices")
       .orderBy("createdAt", "desc")
       .get() // 1차 쿼리: 전체 문서 수 확인
@@ -104,25 +104,24 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (쿼리 구문 오류 해결)
-        // 쿼리 체인을 명확히 분리하여 .offset() 호출 오류를 막습니다.
-        let query = db
-          .collection("notices")
-          .orderBy("createdAt", "desc")
-          .limit(POSTS_PER_PAGE)
-          .offset(offset);
+        // ⭐ FIX: 쿼리 빌더를 명시적으로 구성하여 .offset() 오류 회피
+        // 쿼리 객체를 변수에 할당하고 limit/offset을 단계적으로 적용
+        let queryRef = db.collection("notices").orderBy("createdAt", "desc");
 
-        return query
-          .get() // 2차 쿼리 실행
-          .then((listSnapshot) => {
-            // listSnapshot과 totalCount, offset을 다음 then() 블록으로 전달
-            return { listSnapshot, totalCount, offset };
-          });
+        // limit과 offset 적용
+        queryRef = queryRef.limit(POSTS_PER_PAGE);
+        queryRef = queryRef.offset(offset);
+
+        // 2차 쿼리 실행
+        return queryRef.get().then((listSnapshot) => {
+          // listSnapshot, totalCount, offset을 다음 체인으로 전달
+          return { listSnapshot, totalCount, offset };
+        });
       })
       .then(({ listSnapshot, totalCount, offset }) => {
         let html = "";
 
-        // ⭐ FIX: startNumber 계산
+        // FIX: startNumber 계산
         const startNumber = totalCount - offset;
 
         if (listBody) {
@@ -166,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (listBody)
           listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       });
-
     // 4-4. 페이지네이션 HTML 생성 함수 정의 (generatePagination)
     function generatePagination(totalCount, currentPage, perPage, container) {
       if (!container) return;
