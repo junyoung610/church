@@ -31,7 +31,7 @@ function loadHeaderFooter() {
   // else: root 폴더에 있을 경우 pathPrefix는 빈 문자열('')이 됩니다.
 
   // 헤더
-  fetch(`${pathPrefix}common/header.html`)
+  fetch(`${pathPrefix}/header.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Header 로드 실패: ${response.status}`);
       return response.text();
@@ -47,7 +47,7 @@ function loadHeaderFooter() {
     .catch((error) => console.error("헤더 로드 에러:", error));
 
   // 푸터
-  fetch(`${pathPrefix}common/footer.html`)
+  fetch(`${pathPrefix}/footer.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Footer 로드 실패: ${response.status}`);
       return response.text();
