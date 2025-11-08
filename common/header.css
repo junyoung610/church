@@ -1,21 +1,13 @@
 @charset "UTF-8";
 header {
-  background-color: #1e3b5e; /* 메인 컬러: 네이비 블루 */
-  padding: 15px 0;
-  color: #ffffff;
-  border-bottom: 5px solid #b8860b; /* 보조 컬러: 골드로 포인트 */
+  margin: 15px 0;
+  color: #000000;
 }
 
 .header-inner {
   display: flex;
   justify-content: space-between; /* 로고, GNB, 유틸리티 메뉴를 양 끝으로 배치 */
   align-items: center;
-}
-
-.logo a {
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: bold;
 }
 
 /* GNB (메인 메뉴) 스타일 */
@@ -30,7 +22,7 @@ header {
 
 .gnb .menu-item > a {
   display: block;
-  color: #ffffff;
+  color: #000;
   font-weight: 700;
   padding: 10px 0;
   transition: color 0.3s;
@@ -78,14 +70,13 @@ header {
 
 .util-menu a,
 .util-menu button {
-  color: #ffffff;
+  color: #000;
+  text-align: center;
   font-size: 14px;
   padding: 5px 10px;
-  border: 1px solid #ffffff;
+  border: 1px solid #000;
   border-radius: 5px;
   background: none;
-  width: 90px;
-  height: 35px;
 }
 
 footer {
@@ -106,4 +97,154 @@ footer {
 
 .footer-inner a {
   color: #aaaaaa;
+}
+
+/* church/common/header.css 하단에 추가 */
+
+/* 모바일 토글 버튼 스타일 (PC에서는 숨김) */
+.mobile-toggle {
+  display: none; /* PC에서는 기본 숨김 */
+  align-items: center;
+  gap: 10px;
+  z-index: 101;
+}
+
+.mobile-toggle button {
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 101;
+}
+
+/* 햄버거/닫기 아이콘 (간단한 디자인 예시) */
+.menu-icon::before,
+.menu-icon::after,
+.close-icon::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 3px;
+  background-color: white;
+  margin: 4px auto;
+  transition: all 0.3s;
+}
+.close-icon::before {
+  content: "X"; /* 닫기 아이콘 대신 X 문자 사용 (간단화) */
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  background: none;
+  color: white;
+}
+.close-icon::after {
+  display: none;
+}
+
+/* 1100px 이하일 때 모바일 레이아웃 적용 */
+@media screen and (max-width: 1100px) {
+  /* GNB를 전체 화면 오버레이로 설정 */
+  .gnb {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1e3b5e;
+    z-index: 100;
+    overflow-y: auto;
+    padding-top: 80px;
+    /* GNB를 오른쪽으로 숨김 (active 클래스가 없으면 숨겨짐) */
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* GNB가 활성화되었을 때 (common.js에서 gnb.classList.add("active") 처리) */
+  .gnb.active {
+    transform: translateX(0); /* 화면 안으로 이동 */
+  }
+
+  /* GNB 내부 메뉴 세로 정렬 */
+  .gnb > ul {
+    flex-direction: column;
+    padding: 20px;
+    align-items: flex-start;
+  }
+
+  .gnb .menu-item {
+    padding: 15px 0;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .gnb .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  /* PC 메뉴 속성 재정의 및 제거 */
+  .gnb .sub-menu {
+    position: static; /* position: absolute 제거 */
+    background-color: #2c4974;
+    min-width: auto;
+    padding: 10px 0 10px 20px;
+    margin-top: 10px;
+    /* display: none; -> JS에서 제어 */
+  }
+  .gnb .menu-item:hover > .sub-menu {
+    display: none; /* PC hover 효과 제거 */
+  }
+
+  /* 유틸리티 메뉴 숨기기 (토글 버튼을 사용하므로) */
+  .util-menu {
+    display: none;
+  }
+
+  /* 모바일 토글 버튼 보이기 */
+  .mobile-toggle {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+  /* church/common/header.css - @media screen and (max-width: 1100px) 내부 */
+
+  /* 모바일 유틸 메뉴 스타일 추가 */
+  .util-menu-mobile {
+    display: flex; /* Flex를 사용하여 가로로 정렬 */
+    flex-direction: column; /* 세로 정렬 */
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px 0;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .util-menu-mobile a,
+  .util-menu-mobile button {
+    /* 기존 PC 버튼 스타일 재정의 */
+    width: 100%; /* 너비를 GNB와 맞춤 */
+    height: auto;
+    text-align: left;
+    padding: 8px 15px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s;
+  }
+
+  .util-menu-mobile button {
+    text-align: center; /* 로그아웃 버튼은 중앙 정렬 */
+    background-color: #b8860b; /* 배경색으로 강조 */
+    border: none;
+    border-radius: 4px;
+  }
+  .util-menu-mobile button:hover {
+    background-color: #d4a017;
+  }
+
+  /* PC용 유틸 메뉴는 계속 숨김 */
+  .util-menu:not(.util-menu-mobile) {
+    display: none;
+  }
 }

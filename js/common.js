@@ -28,7 +28,12 @@ function loadHeaderFooter() {
     })
     .then((data) => {
       document.getElementById("header").innerHTML = data;
-      initMenuToggle(); // <--- 헤더 요소가 DOM에 추가된 후 메뉴 토글 초기화
+      initMenuToggle();
+
+      // FIX: 헤더 요소가 DOM에 추가된 후 auth.js의 UI 초기화 함수를 호출합니다.
+      if (typeof initializeAuthUI === "function") {
+        initializeAuthUI();
+      }
     })
     .catch((error) => console.error("헤더 로드 에러:", error));
 
@@ -92,24 +97,25 @@ function initMenuToggle() {
 
     // 모바일 메뉴 서브메뉴 토글 로직
     document.querySelectorAll(".gnb > ul > li").forEach((li) => {
-      // .menu-wrap은 header.html에 정의된 모바일 메뉴 클릭 영역
-      const menuWrap = li.querySelector(".menu-wrap");
-      const subGnb = li.querySelector(".sub-gnb");
+      const menuLink = li.querySelector("a"); // 메뉴 링크 자체를 클릭 영역으로 사용
+      // FIX: .sub-gnb -> .sub-menu 로 클래스명 수정
+      const subMenu = li.querySelector(".sub-menu"); // HTML에 정의된 클래스는 .sub-menu
 
-      if (menuWrap && subGnb) {
-        // 모바일 GNB에서는 .menu-wrap 클릭 시 서브메뉴 토글
-        menuWrap.addEventListener("click", (e) => {
+      if (menuLink && subMenu) {
+        // 모바일 GNB에서는 메뉴 링크 클릭 시 서브메뉴 토글
+        menuLink.addEventListener("click", (e) => {
           if (window.innerWidth <= 1100) {
             e.preventDefault();
 
             // 다른 서브메뉴 닫기
-            document.querySelectorAll(".gnb .sub-gnb").forEach((otherSub) => {
-              if (otherSub !== subGnb) {
+            document.querySelectorAll(".gnb .sub-menu").forEach((otherSub) => {
+              // FIX: .sub-gnb -> .sub-menu
+              if (otherSub !== subMenu) {
                 otherSub.style.display = "none";
               }
             });
             // 현재 서브메뉴 토글
-            subGnb.style.display = subGnb.style.display === "block" ? "none" : "block";
+            subMenu.style.display = subMenu.style.display === "block" ? "none" : "block";
           }
         });
       }
@@ -118,7 +124,8 @@ function initMenuToggle() {
     // PC 모드 복귀 시 서브메뉴가 항상 보이도록 설정 (CSS/JS 충돌 방지)
     window.addEventListener("resize", () => {
       if (window.innerWidth > 1100) {
-        document.querySelectorAll(".gnb .sub-gnb").forEach((sub) => {
+        document.querySelectorAll(".gnb .sub-menu").forEach((sub) => {
+          // FIX: .sub-gnb -> .sub-menu
           sub.style.display = "";
         });
         document.querySelectorAll(".gnb > ul > li").forEach((li) => {

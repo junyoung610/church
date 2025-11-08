@@ -45,3 +45,12 @@ a {
   width: 1370px;
   margin: 0 auto;
 }
+
+.logo {
+  width: 200px;
+  height: 80px;
+}
+
+.hidden {
+  display: none !important;
+}

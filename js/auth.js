@@ -4,46 +4,50 @@
 const auth = firebase.auth();
 const currentPath = window.location.pathname;
 
-// HTML 요소 선택 (모든 페이지에서 작동하도록, 요소가 없으면 null 처리)
-const authLink = document.getElementById("auth-link");
-const mypageLink = document.getElementById("mypage-link");
-const logoutButton = document.getElementById("logout-button");
+// -----------------------------------------------------
+// 2. 인증 상태 관찰 및 UI 업데이트 (common.js에서 헤더 로드 후 호출)
+// -----------------------------------------------------
+// church/js/auth.js - initializeAuthUI 함수 내부 (수정)
 
-// -----------------------------------------------------
-// 2. 인증 상태 관찰 및 UI 업데이트 (모든 페이지 적용)
-// -----------------------------------------------------
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    // [로그인 상태] UI 업데이트: '로그인/회원가입' 숨기고 '마이페이지/로그아웃' 보이기
-    console.log(`사용자 ${user.email} 로그인 상태`);
-    if (authLink) authLink.style.display = "none";
-    if (mypageLink) mypageLink.style.display = "inline-block";
-    if (logoutButton) logoutButton.style.display = "inline-block";
-  } else {
-    // [로그아웃 상태] UI 업데이트: '로그인/회원가입' 보이기
-    console.log("사용자 로그아웃 상태");
-    if (authLink) authLink.style.display = "inline-block";
-    if (mypageLink) mypageLink.style.display = "none";
-    if (logoutButton) logoutButton.style.display = "none";
-  }
-});
+function initializeAuthUI() {
+  // HTML 요소 선택 (PC용)
+  const authLink = document.getElementById("auth-link");
+  const mypageLink = document.getElementById("mypage-link");
+  const logoutButton = document.getElementById("logout-button");
 
-// -----------------------------------------------------
-// 3. 로그아웃 이벤트 처리 (모든 페이지 적용)
-// -----------------------------------------------------
-if (logoutButton) {
-  logoutButton.addEventListener("click", () => {
-    auth
-      .signOut()
-      .then(() => {
-        alert("로그아웃되었습니다.");
-        // onAuthStateChanged가 작동하므로, UI는 자동으로 업데이트됨
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("로그아웃 오류:", error);
-        alert("로그아웃 중 오류가 발생했습니다: " + error.message);
-      });
+  // 🚨 HTML 요소 선택 (모바일용 추가)
+  const authLinkMobile = document.getElementById("auth-link-mobile");
+  const mypageLinkMobile = document.getElementById("mypage-link-mobile");
+  const logoutButtonMobile = document.getElementById("logout-button-mobile");
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // [로그인 상태]: PC/모바일 모두 로그인 메뉴 숨기고 마이페이지/로그아웃 보이기
+      console.log(`사용자 ${user.email} 로그인 상태`);
+
+      // PC 메뉴
+      if (authLink) authLink.classList.add("hidden");
+      if (mypageLink) mypageLink.classList.remove("hidden");
+      if (logoutButton) logoutButton.classList.remove("hidden");
+
+      // 🚨 모바일 메뉴 추가
+      if (authLinkMobile) authLinkMobile.classList.add("hidden");
+      if (mypageLinkMobile) mypageLinkMobile.classList.remove("hidden");
+      if (logoutButtonMobile) logoutButtonMobile.classList.remove("hidden");
+    } else {
+      // [로그아웃 상태]: PC/모바일 모두 로그인 메뉴 보이고 나머지 숨기기
+      console.log("사용자 로그아웃 상태");
+
+      // PC 메뉴
+      if (authLink) authLink.classList.remove("hidden");
+      if (mypageLink) mypageLink.classList.add("hidden");
+      if (logoutButton) logoutButton.classList.add("hidden");
+
+      // 🚨 모바일 메뉴 추가
+      if (authLinkMobile) authLinkMobile.classList.remove("hidden");
+      if (mypageLinkMobile) mypageLinkMobile.classList.add("hidden");
+      if (logoutButtonMobile) logoutButtonMobile.classList.add("hidden");
+    }
   });
 }
 
@@ -100,10 +104,8 @@ if (currentPath.includes("login.html")) {
   }
 }
 
-// 새 폴더/js/auth.js 파일 내 (4) 마이페이지 로직을 아래 코드로 교체
-
 // -----------------------------------------------------
-// (4) 마이페이지 (mypage.html) 로직
+// (6) 마이페이지 (mypage.html) 로직
 // -----------------------------------------------------
 if (currentPath.includes("mypage.html")) {
   auth.onAuthStateChanged((user) => {
@@ -143,3 +145,27 @@ if (currentPath.includes("mypage.html")) {
     }
   });
 }
+
+// church/js/auth.js 파일 가장 하단 (유지할 코드)
+
+// -----------------------------------------------------
+// 99. 동적 요소에 대한 로그아웃 이벤트 처리 (이벤트 위임)
+// -----------------------------------------------------
+document.addEventListener("click", (e) => {
+  if (e.target && (e.target.id === "logout-button" || e.target.id === "logout-button-mobile")) {
+    e.preventDefault();
+
+    const auth = firebase.auth();
+
+    auth
+      .signOut()
+      .then(() => {
+        alert("로그아웃되었습니다.");
+        window.location.href = "index.html"; // <-- 이 코드가 리다이렉션 처리
+      })
+      .catch((error) => {
+        console.error("로그아웃 오류:", error);
+        alert("로그아웃 중 오류가 발생했습니다: " + error.message);
+      });
+  }
+});
