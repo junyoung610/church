@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .delete()
                         .then(() => {
                           alert("게시글이 성공적으로 삭제되었습니다.");
-                          window.location.href = "notice.html"; // 목록으로 이동
+                          window.location.href = "board/notice.html"; // 목록으로 이동
                         })
                         .catch((error) => {
                           console.error("삭제 오류:", error);
