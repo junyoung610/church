@@ -14,24 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
 -------------------------------- */
 // church/js/common.js - loadHeaderFooter 함수 수정
 
-function loadHeaderFooter() {
-  let pathPrefix = "";
+// church/js/common.js - loadHeaderFooter 함수 수정
 
-  // 💡 FIX: 현재 페이지가 서브 폴더(board/ 등)에 있으면 경로를 ../로 설정
-  // 이 로직을 사용하여 현재 HTML 파일이 서브 디렉터리에 있는지 확인합니다.
-  if (
-    window.location.pathname.includes("/board/") ||
-    window.location.pathname.includes("/about/") ||
-    window.location.pathname.includes("/sermons/") ||
-    window.location.pathname.includes("/ministry/") ||
-    window.location.pathname.includes("/contact/")
-  ) {
-    pathPrefix = "../";
-  }
-  // else: root 폴더에 있을 경우 pathPrefix는 빈 문자열('')이 됩니다.
+function loadHeaderFooter() {
+  // 💡 FIX: Base Tag를 사용하므로, pathPrefix 로직을 제거하고 절대 경로 사용
 
   // 헤더
-  fetch(`${pathPrefix}header.html`)
+  fetch(`common/header.html`) // Base Tag 기준으로 common/header.html을 찾습니다.
     .then((response) => {
       if (!response.ok) throw new Error(`Header 로드 실패: ${response.status}`);
       return response.text();
@@ -47,7 +36,7 @@ function loadHeaderFooter() {
     .catch((error) => console.error("헤더 로드 에러:", error));
 
   // 푸터
-  fetch(`${pathPrefix}footer.html`)
+  fetch(`common/footer.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Footer 로드 실패: ${response.status}`);
       return response.text();
@@ -57,6 +46,7 @@ function loadHeaderFooter() {
     })
     .catch((error) => console.error("푸터 로드 에러:", error));
 }
+
 /* -------------------------------
    드롭다운 메뉴
 -------------------------------- */
