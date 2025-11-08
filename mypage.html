@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의정부길교회</title>
+    <link rel="shortcut icon" href="./common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="./css/Reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./common/common.css" />
+    <link rel="stylesheet" href="./common/header.css" />
+
+    <link rel="stylesheet" href="./css/form.css" />
+    <link rel="stylesheet" href="./css/mypage.css" />
+
+    <!-- script -->
+    <script src="./js/common.js" defer></script>
+
+    <!-- login script -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAk2ej1PQqu5uStG7tcqGDQ5LxYeitWY2U",
+        authDomain: "church-f6f22.firebaseapp.com",
+        projectId: "church-f6f22",
+        storageBucket: "church-f6f22.firebasestorage.app",
+        messagingSenderId: "848773880367",
+        appId: "1:848773880367:web:3e82746a59823ffcfb44da",
+        measurementId: "G-5P0HVNX47W",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+  <body>
+    <!-- header#header+main#main+footer#footer -->
+    <header id="header"></header>
+
+    <main>
+      <section class="mypage-section">
+        <h2>나의 계정 정보</h2>
+
+        <div id="view-mode">
+          <h3>계정 정보</h3>
+          <div class="info-group">
+            <label>이메일 (ID)</label>
+            <p id="display-email">정보를 불러오는 중...</p>
+          </div>
+
+          <div class="info-group">
+            <label>이메일 인증 상태</label>
+            <p id="verification-status">정보를 불러오는 중...</p>
+          </div>
+
+          <button
+            id="resend-verification"
+            class="primary-btn hidden"
+            style="width: auto; margin-top: 10px"
+          >
+            인증 메일 재전송
+          </button>
+
+          <div class="info-group">
+            <label>가입 일자</label>
+            <p id="display-date">정보를 불러오는 중...</p>
+          </div>
+
+          <div class="info-group">
+            <label>마지막 로그인</label>
+            <p id="display-last-login">정보를 불러오는 중...</p>
+          </div>
+
+          <h3 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px">
+            교회 등록 정보
+          </h3>
+
+          <div class="info-group">
+            <label>이름</label>
+            <p id="display-name">정보를 불러오는 중...</p>
+          </div>
+
+          <div class="info-group">
+            <label>전화번호</label>
+            <p id="display-phone">정보를 불러오는 중...</p>
+          </div>
+
+          <div class="info-group">
+            <label>직분</label>
+            <p id="display-role">정보를 불러오는 중...</p>
+          </div>
+
+          <div class="btn-group">
+            <button id="edit-start-button" class="primary-btn">정보 수정</button>
+            <a href="#" id="change-password-link" class="secondary-btn">비밀번호 변경</a>
+          </div>
+        </div>
+
+        <form id="edit-form" class="hidden">
+          <div class="input-group">
+            <label for="edit-name">이름</label>
+            <input type="text" id="edit-name" required />
+          </div>
+          <div class="input-group">
+            <label for="edit-phone">전화번호</label>
+            <input type="tel" id="edit-phone" />
+          </div>
+          <div class="input-group">
+            <label for="edit-role">직분</label>
+            <select id="edit-role">
+              <option value="성도">성도</option>
+              <option value="집사">집사</option>
+              <option value="권사">권사</option>
+              <option value="장로">장로</option>
+            </select>
+          </div>
+          <div class="btn-group">
+            <button type="submit" class="primary-btn">수정 완료</button>
+            <button type="button" id="edit-cancel-button" class="secondary-btn">취소</button>
+          </div>
+        </form>
+        <form id="password-form" class="hidden">
+          <h3>비밀번호 변경</h3>
+
+          <div class="input-group">
+            <label for="current-password">현재 비밀번호</label>
+            <input type="password" id="current-password" required />
+          </div>
+
+          <div class="input-group">
+            <label for="new-password">새 비밀번호</label>
+            <input type="password" id="new-password" required />
+          </div>
+
+          <div class="input-group">
+            <label for="confirm-password">새 비밀번호 확인</label>
+            <input type="password" id="confirm-password" required />
+          </div>
+
+          <div class="btn-group">
+            <button type="submit" class="primary-btn">비밀번호 변경 완료</button>
+            <button type="button" id="password-cancel-button" class="secondary-btn">취소</button>
+          </div>
+
+          <p id="password-error-message" style="color: red; margin-top: 10px"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer id="footer"></footer>
+    <script src="./js/auth.js"></script>
+  </body>
+</html>

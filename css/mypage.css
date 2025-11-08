@@ -1,0 +1,49 @@
+.mypage-section {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+.mypage-section h2 {
+  font-size: 28px;
+  color: #1e3b5e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.info-group {
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+}
+.info-group:last-of-type {
+  border-bottom: none;
+}
+.info-group label {
+  display: block;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+.info-group p {
+  font-size: 16px;
+  color: #333;
+}
+.info-group p#verification-status {
+  font-weight: bold;
+  color: orange; /* 기본 대기 상태 색상 */
+}
+.info-group p#verification-status:contains("인증 완료") {
+  color: green; /* JS로 인증 완료 시 색상 변경 */
+}
+.btn-group {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+}
+.hidden {
+  display: none !important;
+}
