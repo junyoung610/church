@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const user = auth.currentUser;
 
-      // 로그인 상태 재확인
       if (!user) {
         alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
         return;
@@ -43,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Firestore에 게시글 저장
       db.collection("notices")
         .add({
-          // 'notices' 컬렉션에 추가
           title: title,
           content: content,
           authorId: user.uid,
@@ -72,8 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // church/js/board.js - 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
-
+  // -----------------------------------------------------
+  // 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
+  // -----------------------------------------------------
   if (window.location.pathname.includes("notice.html")) {
     // ⭐ 페이지네이션 상수 정의
     const POSTS_PER_PAGE = 10;
@@ -104,24 +103,22 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // ⭐ FIX: 쿼리 빌더를 명시적으로 구성하여 .offset() 오류 회피
-        // 쿼리 객체를 변수에 할당하고 limit/offset을 단계적으로 적용
+        // ⭐ FIX: 2차 쿼리 안정화 (쿼리 객체를 변수에 할당하여 offset 오류 회피)
         let queryRef = db.collection("notices").orderBy("createdAt", "desc");
 
-        // limit과 offset 적용
+        // limit과 offset을 명시적으로 적용
         queryRef = queryRef.limit(POSTS_PER_PAGE);
         queryRef = queryRef.offset(offset);
 
         // 2차 쿼리 실행
         return queryRef.get().then((listSnapshot) => {
-          // listSnapshot, totalCount, offset을 다음 체인으로 전달
+          // listSnapshot, totalCount, offset을 다음 then() 블록으로 전달
           return { listSnapshot, totalCount, offset };
         });
       })
       .then(({ listSnapshot, totalCount, offset }) => {
         let html = "";
 
-        // FIX: startNumber 계산
         const startNumber = totalCount - offset;
 
         if (listBody) {
@@ -147,7 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
               html += `
                 <tr>
-                  <td class="col-num">${postNumber}</td> <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                  <td class="col-num">${postNumber}</td> 
+                  <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
                   <td class="col-author">${authorDisplay}</td>
                   <td class="col-date">${createdDate}</td>
                 </tr>
@@ -165,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (listBody)
           listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       });
+
     // 4-4. 페이지네이션 HTML 생성 함수 정의 (generatePagination)
     function generatePagination(totalCount, currentPage, perPage, container) {
       if (!container) return;
