@@ -12,16 +12,26 @@ document.addEventListener("DOMContentLoaded", () => {
 /* -------------------------------
    헤더/푸터 로드
 -------------------------------- */
-function loadHeaderFooter() {
-  let baseURL = "";
+// church/js/common.js - loadHeaderFooter 함수 수정
 
-  // GitHub Pages 환경이면 repository 이름 붙이기
-  if (window.location.hostname.includes("github.io")) {
-    baseURL = "/church/";
+function loadHeaderFooter() {
+  let pathPrefix = "";
+
+  // 💡 FIX: 현재 페이지가 서브 폴더(board/ 등)에 있으면 경로를 ../로 설정
+  // 이 로직을 사용하여 현재 HTML 파일이 서브 디렉터리에 있는지 확인합니다.
+  if (
+    window.location.pathname.includes("/board/") ||
+    window.location.pathname.includes("/about/") ||
+    window.location.pathname.includes("/sermons/") ||
+    window.location.pathname.includes("/ministry/") ||
+    window.location.pathname.includes("/contact/")
+  ) {
+    pathPrefix = "../";
   }
+  // else: root 폴더에 있을 경우 pathPrefix는 빈 문자열('')이 됩니다.
 
   // 헤더
-  fetch(`${baseURL}common/header.html`)
+  fetch(`${pathPrefix}common/header.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Header 로드 실패: ${response.status}`);
       return response.text();
@@ -30,7 +40,6 @@ function loadHeaderFooter() {
       document.getElementById("header").innerHTML = data;
       initMenuToggle();
 
-      // FIX: 헤더 요소가 DOM에 추가된 후 auth.js의 UI 초기화 함수를 호출합니다.
       if (typeof initializeAuthUI === "function") {
         initializeAuthUI();
       }
@@ -38,7 +47,7 @@ function loadHeaderFooter() {
     .catch((error) => console.error("헤더 로드 에러:", error));
 
   // 푸터
-  fetch(`${baseURL}common/footer.html`)
+  fetch(`${pathPrefix}common/footer.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Footer 로드 실패: ${response.status}`);
       return response.text();
@@ -48,7 +57,6 @@ function loadHeaderFooter() {
     })
     .catch((error) => console.error("푸터 로드 에러:", error));
 }
-
 /* -------------------------------
    드롭다운 메뉴
 -------------------------------- */

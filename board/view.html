@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의정부길교회</title>
+    <link rel="shortcut icon" href="../common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="../css/Reset.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../common/common.css" />
+    <link rel="stylesheet" href="../common/header.css" />
+
+    <link rel="stylesheet" href="../css/board.css" />
+
+    <!-- script -->
+    <script src="../js/common.js" defer></script>
+
+    <!-- login script -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAk2ej1PQqu5uStG7tcqGDQ5LxYeitWY2U",
+        authDomain: "church-f6f22.firebaseapp.com",
+        projectId: "church-f6f22",
+        storageBucket: "church-f6f22.firebasestorage.app",
+        messagingSenderId: "848773880367",
+        appId: "1:848773880367:web:3e82746a59823ffcfb44da",
+        measurementId: "G-5P0HVNX47W",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+  <body>
+    <!-- header#header+main#main+footer#footer -->
+    <header id="header"></header>
+
+    <main id="main">
+      <div class="inner">
+        <section class="post-view-section">
+          <h2 id="post-title-view">제목을 불러오는 중...</h2>
+
+          <div class="post-meta">
+            <span id="post-author">작성자: 로드 중...</span> |
+            <span id="post-date">작성일: 로드 중...</span> |
+            <span id="post-views">조회수: 로드 중...</span>
+          </div>
+
+          <div id="post-content-view" class="post-content">내용을 불러오는 중입니다.</div>
+
+          <div class="button-group post-controls">
+            <button id="edit-post-btn" class="primary-btn hidden">수정</button>
+            <button id="delete-post-btn" class="secondary-btn hidden">삭제</button>
+            <a href="./notice.html" class="secondary-btn">목록으로</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer id="footer"></footer>
+    <script src="../js/auth.js"></script>
+    <script src="../js/board.js"></script>
+  </body>
+</html>

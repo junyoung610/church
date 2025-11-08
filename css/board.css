@@ -1,0 +1,210 @@
+/* church/css/board.css */
+
+.board-list-section {
+  padding: 50px 0;
+  min-height: 60vh;
+}
+
+.board-list-section h2,
+.board-write-section h2 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1e3b5e;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* 게시판 헤더 (총 개수 및 검색) */
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.board-header .total-count span {
+  font-weight: bold;
+  color: #b8860b;
+}
+
+.board-header .search-box input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+.board-header .search-box button {
+  padding: 5px 10px;
+  background-color: #1e3b5e;
+  color: white;
+  border: 1px solid #1e3b5e;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+/* 게시판 테이블 스타일 */
+.notice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  border-top: 2px solid #1e3b5e;
+}
+
+.notice-table th,
+.notice-table td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.notice-table th {
+  background-color: #f8f8f8;
+  font-weight: 700;
+  color: #333;
+}
+
+.notice-table .col-title {
+  text-align: left;
+}
+
+.notice-table td a:hover {
+  text-decoration: underline;
+  color: #b8860b;
+}
+
+/* 테이블 컬럼 너비 */
+.notice-table .col-num {
+  width: 10%;
+}
+.notice-table .col-title {
+  width: 60%;
+} /* 💡 75%에서 60%로 축소 */
+.notice-table .col-author {
+  width: 15%;
+} /* 💡 새로 추가 */
+.notice-table .col-date {
+  width: 15%;
+} /* 💡 15% 유지 */
+
+/* Pagination 스타일 */
+.pagination {
+  text-align: center;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 8px 12px;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.pagination a.active {
+  background-color: #1e3b5e;
+  color: white;
+  border-color: #1e3b5e;
+}
+
+.pagination a:hover:not(.active) {
+  background-color: #f0f0f0;
+}
+
+/* church/css/board.css 하단에 추가 */
+
+.pagination a.disabled {
+  pointer-events: none; /* 클릭 이벤트 막기 */
+  opacity: 0.5; /* 흐리게 표시 */
+  cursor: default;
+}
+
+/* 글쓰기 폼 스타일 */
+.board-write-section {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.write-form .input-group {
+  margin-bottom: 20px;
+}
+
+.write-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #1e3b5e;
+}
+
+.write-form input[type="text"],
+.write-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.write-form textarea {
+  resize: vertical;
+}
+
+.write-form .button-group {
+  text-align: right;
+  margin-top: 30px;
+}
+
+.write-form .button-group .primary-btn,
+.write-form .button-group .secondary-btn {
+  width: auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+/* church/css/board.css 하단에 추가 */
+
+/* 게시글 보기 스타일 */
+.post-view-section {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.post-view-section h2 {
+  text-align: left;
+  border-bottom: 2px solid #1e3b5e;
+  padding-bottom: 15px;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.post-meta {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.post-content {
+  min-height: 200px;
+  line-height: 1.8;
+  white-space: pre-wrap; /* 줄바꿈 유지 */
+}
+
+.post-controls {
+  text-align: right;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}

@@ -68,6 +68,10 @@ header {
   gap: 10px;
 }
 
+.util-menu-mobile {
+  display: none;
+}
+
 .util-menu a,
 .util-menu button {
   color: #000;
@@ -147,12 +151,15 @@ footer {
 
 /* 1100px 이하일 때 모바일 레이아웃 적용 */
 @media screen and (max-width: 1100px) {
+  .gnb .menu-item > a {
+    color: #fff;
+  }
   /* GNB를 전체 화면 오버레이로 설정 */
   .gnb {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    width: 50%;
     height: 100%;
     background-color: #1e3b5e;
     z-index: 100;
@@ -215,7 +222,7 @@ footer {
   .util-menu-mobile {
     display: flex; /* Flex를 사용하여 가로로 정렬 */
     flex-direction: column; /* 세로 정렬 */
-    align-items: flex-start;
+    align-items: center;
     gap: 15px;
     padding: 20px 0;
     margin-top: 20px;
@@ -225,9 +232,9 @@ footer {
   .util-menu-mobile a,
   .util-menu-mobile button {
     /* 기존 PC 버튼 스타일 재정의 */
-    width: 100%; /* 너비를 GNB와 맞춤 */
+    width: 70%; /* 너비를 GNB와 맞춤 */
+    color: #fff;
     height: auto;
-    text-align: left;
     padding: 8px 15px;
     border: 1px solid transparent;
     transition: background-color 0.3s;
