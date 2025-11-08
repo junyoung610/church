@@ -72,9 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
-  // -----------------------------------------------------
+  // church/js/board.js - 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
+
   if (window.location.pathname.includes("notice.html")) {
     // ⭐ 페이지네이션 상수 정의
     const POSTS_PER_PAGE = 10;
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 4-2. 게시글 로드 및 페이지네이션 구현
+    // 4-2. 게시글 로드 및 페이지네이션 구현 (쿼리 구문 오류 해결)
     db.collection("notices")
       .orderBy("createdAt", "desc")
       .get() // 1차 쿼리: 전체 문서 수 확인
@@ -105,19 +104,25 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // ⭐ FIX: 쿼리 객체를 변수에 할당하여 체인을 명확히 하고 오류를 회피합니다.
-        let listQuery = db
+        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (쿼리 구문 오류 해결)
+        // 쿼리 체인을 명확히 분리하여 .offset() 호출 오류를 막습니다.
+        let query = db
           .collection("notices")
           .orderBy("createdAt", "desc")
           .limit(POSTS_PER_PAGE)
           .offset(offset);
 
-        // 2차 쿼리를 실행하고 결과를 다음 then()으로 전달합니다.
-        return listQuery.get().then((listSnapshot) => {
-          return { listSnapshot, totalCount, offset };
-        });
+        return query
+          .get() // 2차 쿼리 실행
+          .then((listSnapshot) => {
+            // listSnapshot과 totalCount, offset을 다음 then() 블록으로 전달
+            return { listSnapshot, totalCount, offset };
+          });
       })
       .then(({ listSnapshot, totalCount, offset }) => {
+        let html = "";
+
+        // ⭐ FIX: startNumber 계산
         const startNumber = totalCount - offset;
 
         if (listBody) {
@@ -143,8 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
               html += `
                 <tr>
-                  <td class="col-num">${postNumber}</td> 
-                  <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                  <td class="col-num">${postNumber}</td> <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
                   <td class="col-author">${authorDisplay}</td>
                   <td class="col-date">${createdDate}</td>
                 </tr>

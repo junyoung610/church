@@ -98,18 +98,16 @@
   margin: 0 4px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  color: #333;
-  transition: background-color 0.3s;
 }
-
 .pagination a.active {
   background-color: #1e3b5e;
   color: white;
   border-color: #1e3b5e;
 }
-
-.pagination a:hover:not(.active) {
-  background-color: #f0f0f0;
+.pagination a.disabled {
+  pointer-events: none; /* 클릭 이벤트 막기 */
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* church/css/board.css 하단에 추가 */
