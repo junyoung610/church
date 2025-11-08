@@ -105,17 +105,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (색인 생성 완료 가정)
-        return (
-          db
-            .collection("notices")
-            .orderBy("createdAt", "desc")
-            .limit(POSTS_PER_PAGE)
-            .offset(offset)
-            .get()
-            // totalCount와 offset을 다음 체인으로 전달하여 번호 계산 오류 방지
-            .then((listSnapshot) => ({ listSnapshot, totalCount, offset }))
-        );
+        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (Firebase 색인 설정 필수)
+        return db
+          .collection("notices")
+          .orderBy("createdAt", "desc")
+          .limit(POSTS_PER_PAGE)
+          .offset(offset)
+          .get() // ⭐ FIX: .get()을 호출한 결과를 다음 then()으로 전달
+          .then((listSnapshot) => {
+            // listSnapshot과 totalCount, offset을 다음 체인으로 전달
+            return { listSnapshot, totalCount, offset };
+          });
       })
       .then(({ listSnapshot, totalCount, offset }) => {
         let html = "";
