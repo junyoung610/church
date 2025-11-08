@@ -78,13 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const paginationContainer = document.querySelector(".pagination");
     const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
+    const writePostBtn = document.querySelector("#write-post-btn");
 
     const noticesRef = db.collection("notices").orderBy("createdAt", "desc");
 
-    let lastVisible = null;
-    let firstVisible = null;
     let totalCount = 0;
     let currentPage = 1;
+    let totalPages = 0;
+    let pageSnapshots = []; // 각 페이지 마지막 문서 저장
 
     // 로그인 상태에 따라 글쓰기 버튼 표시
     auth.onAuthStateChanged((user) => {
@@ -93,25 +94,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 전체 게시글 수 계산 (처음 한 번만)
+    // 전체 게시글 수 계산 후 첫 페이지 불러오기
     noticesRef.get().then((snapshot) => {
       totalCount = snapshot.size;
+      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
-      loadPosts(); // 첫 페이지 불러오기
+      loadPage(1);
     });
 
-    // ✅ 게시글 로드 함수
-    async function loadPosts(direction = "first") {
+    // ✅ 페이지별 게시글 로드
+    async function loadPage(pageNumber) {
       let query = noticesRef.limit(POSTS_PER_PAGE);
 
-      if (direction === "next" && lastVisible) {
-        query = noticesRef.startAfter(lastVisible).limit(POSTS_PER_PAGE);
-        currentPage++;
-      } else if (direction === "prev" && firstVisible) {
-        query = noticesRef.endBefore(firstVisible).limitToLast(POSTS_PER_PAGE);
-        currentPage--;
-      } else {
-        currentPage = 1;
+      // 2페이지 이상일 경우, 이전 페이지의 마지막 문서 기준으로 startAfter
+      if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
+        query = noticesRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
       }
 
       try {
@@ -122,12 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        firstVisible = snapshot.docs[0];
-        lastVisible = snapshot.docs[snapshot.docs.length - 1];
+        // 각 페이지의 마지막 문서 저장
+        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
+        // 테이블 표시
+        const startNumber = totalCount - (pageNumber - 1) * POSTS_PER_PAGE;
         let html = "";
-        const startNumber = totalCount - (currentPage - 1) * POSTS_PER_PAGE;
-
         snapshot.forEach((doc, index) => {
           const post = doc.data();
           const docId = doc.id;
@@ -148,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         listBody.innerHTML = html;
+        currentPage = pageNumber;
         updatePaginationUI();
       } catch (error) {
         console.error("게시글 로드 오류:", error);
@@ -155,27 +153,44 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ✅ 페이지네이션 UI 업데이트
+    // ✅ 숫자 기반 페이지네이션 UI 생성
     function updatePaginationUI() {
+      let pagesHtml = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        pagesHtml += `<a href="#" class="${
+          i === currentPage ? "active" : ""
+        }" data-page="${i}">${i}</a>`;
+      }
+
       paginationContainer.innerHTML = `
       <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
-      <span class="page-info">${currentPage}</span>
-      <a href="#" class="next ${
-        totalCount <= currentPage * POSTS_PER_PAGE ? "disabled" : ""
-      }">다음</a>
+      ${pagesHtml}
+      <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
     `;
 
       const prevBtn = paginationContainer.querySelector(".prev");
       const nextBtn = paginationContainer.querySelector(".next");
 
-      prevBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (currentPage > 1) loadPosts("prev");
+      // 숫자 페이지 클릭 시
+      paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const page = parseInt(e.target.dataset.page);
+          if (page !== currentPage) loadPage(page);
+        });
       });
 
+      // 이전 버튼
+      prevBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (currentPage > 1) loadPage(currentPage - 1);
+      });
+
+      // 다음 버튼
       nextBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        if (totalCount > currentPage * POSTS_PER_PAGE) loadPosts("next");
+        if (currentPage < totalPages) loadPage(currentPage + 1);
       });
     }
   }
