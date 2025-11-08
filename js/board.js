@@ -74,100 +74,100 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
   // -----------------------------------------------------
   if (window.location.pathname.includes("notice.html")) {
-    // ⭐ 페이지네이션 상수 정의
     const POSTS_PER_PAGE = 10;
+    const paginationContainer = document.querySelector(".pagination");
+    const totalCountElement = document.querySelector("#total-posts");
+    const listBody = document.getElementById("notice-list-tbody");
     const urlParams = new URLSearchParams(window.location.search);
     const currentPage = parseInt(urlParams.get("page")) || 1;
-    const paginationContainer = document.querySelector(".pagination");
-    const totalCountElement = document.querySelector("#total-posts"); // #total-posts ID 사용
 
-    // 4-1. '글쓰기' 버튼 표시 제어 (로그인 시에만 보이도록)
+    // 4-1. 로그인한 사용자만 글쓰기 버튼 보이기
     auth.onAuthStateChanged((user) => {
       if (writePostBtn) {
-        if (user) {
-          writePostBtn.classList.remove("hidden");
-        } else {
-          writePostBtn.classList.add("hidden");
-        }
+        writePostBtn.classList.toggle("hidden", !user);
       }
     });
 
-    // 4-2. 게시글 로드 및 페이지네이션 구현
-    db.collection("notices")
-      .orderBy("createdAt", "desc")
-      .get() // 1차 쿼리: 전체 문서 수 확인
-      .then((snapshot) => {
-        const totalCount = snapshot.docs.length;
-        const offset = (currentPage - 1) * POSTS_PER_PAGE;
+    // Firestore 컬렉션 참조
+    const noticesRef = db.collection("notices").orderBy("createdAt", "desc");
 
-        // 총 개수 표시
-        if (totalCountElement) totalCountElement.textContent = totalCount;
+    // 4-2. 전체 게시글 수 가져오기
+    let totalCount = 0;
+    noticesRef.get().then((snapshot) => {
+      totalCount = snapshot.size;
+      if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // ⭐ FIX: 2차 쿼리 안정화 (쿼리 객체를 변수에 할당하여 offset 오류 회피)
-        let queryRef = db.collection("notices").orderBy("createdAt", "desc");
+      // 페이지네이션 계산
+      const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+      const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
 
-        // limit과 offset을 명시적으로 적용
-        queryRef = queryRef.limit(POSTS_PER_PAGE);
-        queryRef = queryRef.offset(offset);
+      // startAfter()를 위한 기준 문서 찾기
+      if (startIndex === 0) {
+        // 첫 페이지: 바로 limit()으로 불러옴
+        loadPosts(noticesRef.limit(POSTS_PER_PAGE), totalCount, startIndex);
+      } else {
+        // 이전 페이지의 마지막 문서를 찾아 startAfter() 적용
+        noticesRef
+          .limit(startIndex)
+          .get()
+          .then((prevSnapshot) => {
+            const lastVisible = prevSnapshot.docs[prevSnapshot.docs.length - 1];
+            if (lastVisible) {
+              const nextQuery = noticesRef.startAfter(lastVisible).limit(POSTS_PER_PAGE);
+              loadPosts(nextQuery, totalCount, startIndex);
+            } else {
+              // 예외 처리
+              listBody.innerHTML = '<tr><td colspan="4">데이터가 없습니다.</td></tr>';
+            }
+          });
+      }
 
-        // 2차 쿼리 실행
-        return queryRef.get().then((listSnapshot) => {
-          // listSnapshot, totalCount, offset을 다음 then() 블록으로 전달
-          return { listSnapshot, totalCount, offset };
-        });
-      })
-      .then(({ listSnapshot, totalCount, offset }) => {
-        let html = "";
+      // 페이지네이션 UI 생성
+      generatePagination(totalCount, currentPage, POSTS_PER_PAGE, paginationContainer);
+    });
 
-        const startNumber = totalCount - offset;
+    // 🔹 게시글 로드 함수
+    function loadPosts(queryRef, totalCount, offset) {
+      queryRef
+        .get()
+        .then((snapshot) => {
+          let html = "";
+          const startNumber = totalCount - offset;
 
-        if (listBody) {
-          if (listSnapshot.empty) {
+          if (snapshot.empty) {
             html = '<tr><td colspan="4">등록된 게시글이 없습니다.</td></tr>';
           } else {
-            listSnapshot.forEach((doc, index) => {
+            snapshot.forEach((doc, index) => {
               const post = doc.data();
               const docId = doc.id;
-
-              const postNumber = startNumber - index; // 번호 계산
-
-              const dateObj = post.createdAt ? new Date(post.createdAt.toDate()) : null;
-              const createdDate = dateObj
-                ? dateObj.getFullYear() +
-                  "." +
-                  ("0" + (dateObj.getMonth() + 1)).slice(-2) +
-                  "." +
-                  ("0" + dateObj.getDate()).slice(-2)
+              const postNumber = startNumber - index;
+              const createdDate = post.createdAt
+                ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
                 : "날짜 없음";
-
               const authorDisplay = post.authorName || post.authorEmail || "미상";
 
               html += `
-                <tr>
-                  <td class="col-num">${postNumber}</td> 
-                  <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
-                  <td class="col-author">${authorDisplay}</td>
-                  <td class="col-date">${createdDate}</td>
-                </tr>
-              `;
+              <tr>
+                <td class="col-num">${postNumber}</td>
+                <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                <td class="col-author">${authorDisplay}</td>
+                <td class="col-date">${createdDate}</td>
+              </tr>
+            `;
             });
           }
+
           listBody.innerHTML = html;
-        }
-
-        // 4-3. 페이지네이션 링크 생성
-        generatePagination(totalCount, currentPage, POSTS_PER_PAGE, paginationContainer);
-      })
-      .catch((error) => {
-        console.error("게시글 로드 오류:", error);
-        if (listBody)
+        })
+        .catch((error) => {
+          console.error("게시글 로드 오류:", error);
           listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
-      });
+        });
+    }
 
-    // 4-4. 페이지네이션 HTML 생성 함수 정의 (generatePagination)
+    // 🔹 페이지네이션 생성 함수
     function generatePagination(totalCount, currentPage, perPage, container) {
       if (!container) return;
-
       const totalPages = Math.ceil(totalCount / perPage);
       if (totalPages <= 1) {
         container.innerHTML = "";
@@ -177,11 +177,10 @@ document.addEventListener("DOMContentLoaded", () => {
       let paginationHtml = "";
 
       // 이전 버튼
-      if (currentPage > 1) {
-        paginationHtml += `<a href="notice.html?page=${currentPage - 1}" class="prev">이전</a>`;
-      } else {
-        paginationHtml += `<a href="#" class="prev disabled">이전</a>`;
-      }
+      paginationHtml +=
+        currentPage > 1
+          ? `<a href="notice.html?page=${currentPage - 1}" class="prev">이전</a>`
+          : `<a href="#" class="prev disabled">이전</a>`;
 
       // 페이지 번호
       for (let i = 1; i <= totalPages; i++) {
@@ -191,11 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // 다음 버튼
-      if (currentPage < totalPages) {
-        paginationHtml += `<a href="notice.html?page=${currentPage + 1}" class="next">다음</a>`;
-      } else {
-        paginationHtml += `<a href="#" class="next disabled">다음</a>`;
-      }
+      paginationHtml +=
+        currentPage < totalPages
+          ? `<a href="notice.html?page=${currentPage + 1}" class="next">다음</a>`
+          : `<a href="#" class="next disabled">다음</a>`;
 
       container.innerHTML = paginationHtml;
     }
