@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (색인 생성 완료 가정)
+        // ⭐ FIX: 2차 쿼리 체인을 명확히 분리하고, totalCount와 offset을 전달합니다.
         return db
           .collection("notices")
           .orderBy("createdAt", "desc")
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .offset(offset)
           .get()
           .then((listSnapshot) => {
-            // listSnapshot과 totalCount, offset을 다음 체인으로 전달
+            // listSnapshot, totalCount, offset을 다음 then() 블록으로 전달합니다.
             return { listSnapshot, totalCount, offset };
           });
       })
