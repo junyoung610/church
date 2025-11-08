@@ -105,20 +105,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (Firebase 색인 설정 완료 가정)
-        return (
-          db
-            .collection("notices")
-            .orderBy("createdAt", "desc")
-            // ⭐ FIX: limit과 offset을 사용하여 쿼리 빌더를 완성합니다.
-            .limit(POSTS_PER_PAGE)
-            .offset(offset)
-            .get() // ⭐ get()을 호출한 결과를 다음 then()으로 전달
-            .then((listSnapshot) => {
-              // listSnapshot, totalCount, offset을 다음 then() 블록으로 전달
-              return { listSnapshot, totalCount, offset };
-            })
-        );
+        // ⭐ FIX: 쿼리 객체를 변수에 할당하여 체인을 명확히 하고 오류를 회피합니다.
+        let listQuery = db
+          .collection("notices")
+          .orderBy("createdAt", "desc")
+          .limit(POSTS_PER_PAGE)
+          .offset(offset);
+
+        // 2차 쿼리를 실행하고 결과를 다음 then()으로 전달합니다.
+        return listQuery.get().then((listSnapshot) => {
+          return { listSnapshot, totalCount, offset };
+        });
       })
       .then(({ listSnapshot, totalCount, offset }) => {
         const startNumber = totalCount - offset;
