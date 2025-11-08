@@ -17,7 +17,7 @@ function loadHeaderFooter() {
 
   // GitHub Pages 환경이면 repository 이름 붙이기
   if (window.location.hostname.includes("github.io")) {
-    baseURL = "/testchurchpage/";
+    baseURL = "/church/";
   }
 
   // 헤더
@@ -48,29 +48,25 @@ function loadHeaderFooter() {
    드롭다운 메뉴
 -------------------------------- */
 function initializeDropdowns() {
-  document
-    .querySelectorAll("nav ul li.has-dropdown > a")
-    .forEach(function (item) {
-      item.addEventListener("click", function (event) {
-        event.preventDefault();
-        const parentLi = this.parentElement;
+  document.querySelectorAll("nav ul li.has-dropdown > a").forEach(function (item) {
+    item.addEventListener("click", function (event) {
+      event.preventDefault();
+      const parentLi = this.parentElement;
 
-        // PC 모드에서만 실행 (모바일 메뉴는 initMenuToggle에서 처리)
-        if (window.innerWidth > 1100) {
-          // 다른 드롭다운 닫기
-          document
-            .querySelectorAll("nav ul li.has-dropdown")
-            .forEach((otherLi) => {
-              if (otherLi !== parentLi) {
-                otherLi.classList.remove("active");
-              }
-            });
+      // PC 모드에서만 실행 (모바일 메뉴는 initMenuToggle에서 처리)
+      if (window.innerWidth > 1100) {
+        // 다른 드롭다운 닫기
+        document.querySelectorAll("nav ul li.has-dropdown").forEach((otherLi) => {
+          if (otherLi !== parentLi) {
+            otherLi.classList.remove("active");
+          }
+        });
 
-          // 현재 메뉴 토글
-          parentLi.classList.toggle("active");
-        }
-      });
+        // 현재 메뉴 토글
+        parentLi.classList.toggle("active");
+      }
     });
+  });
 }
 
 /* -------------------------------
@@ -113,8 +109,7 @@ function initMenuToggle() {
               }
             });
             // 현재 서브메뉴 토글
-            subGnb.style.display =
-              subGnb.style.display === "block" ? "none" : "block";
+            subGnb.style.display = subGnb.style.display === "block" ? "none" : "block";
           }
         });
       }
