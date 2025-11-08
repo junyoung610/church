@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
           title: title,
           content: content,
           authorId: user.uid,
-          // 💡 추가: 작성자 이름 (displayName)을 저장합니다.
           authorName: user.displayName || "이름 없음",
           authorEmail: user.email,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -73,8 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // church/js/board.js - 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
-
+  // -----------------------------------------------------
+  // 4. 게시글 목록 로드 및 '글쓰기' 버튼 표시 (notice.html)
+  // -----------------------------------------------------
   if (window.location.pathname.includes("notice.html")) {
     // ⭐ 페이지네이션 상수 정의
     const POSTS_PER_PAGE = 10;
@@ -105,13 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // 총 개수 표시
         if (totalCountElement) totalCountElement.textContent = totalCount;
 
-        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (Firebase 색인 설정 필수)
+        // 2차 쿼리: 현재 페이지에 해당하는 게시글만 쿼리 (색인 생성 완료 가정)
         return db
           .collection("notices")
           .orderBy("createdAt", "desc")
           .limit(POSTS_PER_PAGE)
           .offset(offset)
-          .get() // ⭐ FIX: .get()을 호출한 결과를 다음 then()으로 전달
+          .get()
           .then((listSnapshot) => {
             // listSnapshot과 totalCount, offset을 다음 체인으로 전달
             return { listSnapshot, totalCount, offset };
@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(({ listSnapshot, totalCount, offset }) => {
         let html = "";
 
-        // ⭐ FIX 1: startNumber 계산 (NaN 오류 해결)
         const startNumber = totalCount - offset;
 
         if (listBody) {
@@ -133,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
               const postNumber = startNumber - index; // 번호 계산
 
-              // ⭐ FIX 2: 날짜 포맷 (YYYY.MM.DD 형식으로 명확하게 수정)
               const dateObj = post.createdAt ? new Date(post.createdAt.toDate()) : null;
               const createdDate = dateObj
                 ? dateObj.getFullYear() +
@@ -147,7 +145,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
               html += `
                 <tr>
-                  <td class="col-num">${postNumber}</td> <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                  <td class="col-num">${postNumber}</td> 
+                  <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
                   <td class="col-author">${authorDisplay}</td>
                   <td class="col-date">${createdDate}</td>
                 </tr>
@@ -204,13 +203,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------------------------------
-  // 5. 게시글 상세 보기 (view.html)
+  // 5. 게시글 상세 보기 및 삭제 (view.html)
   // -----------------------------------------------------
   if (window.location.pathname.includes("view.html")) {
-    // URL에서 게시글 ID 가져오기 (예: view.html?id=abcdefg123)
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("id");
 
+    // 5-1. 게시글 데이터 로드 (기존 로직 유지)
     if (postId) {
       db.collection("notices")
         .doc(postId)
@@ -227,14 +226,12 @@ document.addEventListener("DOMContentLoaded", () => {
               })
               .catch((error) => console.error("조회수 증가 오류:", error));
 
-            // 날짜 포맷
             const createdDate = post.createdAt
               ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
               : "날짜 없음";
 
             // HTML 요소에 데이터 삽입
             document.getElementById("post-title-view").textContent = post.title;
-            // 💡 수정: authorName을 먼저 사용하고, 없으면 email을 사용합니다.
             document.getElementById("post-author").textContent = `작성자: ${
               post.authorName || post.authorEmail || "미상"
             }`;
@@ -245,11 +242,36 @@ document.addEventListener("DOMContentLoaded", () => {
             const pageTitleElement = document.getElementById("page-title");
             if (pageTitleElement) pageTitleElement.textContent = `${post.title} - 의정부길교회`;
 
-            // 수정/삭제 버튼 표시 제어 (본인 글일 경우만)
+            // 5-2. 수정/삭제 버튼 표시 및 이벤트 할당
             auth.onAuthStateChanged((user) => {
+              const editBtn = document.getElementById("edit-post-btn");
+              const deleteBtn = document.getElementById("delete-post-btn");
+
               if (user && user.uid === post.authorId) {
-                document.getElementById("edit-post-btn").classList.remove("hidden");
-                document.getElementById("delete-post-btn").classList.remove("hidden");
+                if (editBtn) editBtn.classList.remove("hidden");
+                if (deleteBtn) deleteBtn.classList.remove("hidden");
+
+                // ⭐ 글 삭제 이벤트 리스너 할당
+                if (deleteBtn) {
+                  deleteBtn.addEventListener("click", () => {
+                    if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+                      db.collection("notices")
+                        .doc(postId)
+                        .delete()
+                        .then(() => {
+                          alert("게시글이 성공적으로 삭제되었습니다.");
+                          window.location.href = "notice.html"; // 목록으로 이동
+                        })
+                        .catch((error) => {
+                          console.error("삭제 오류:", error);
+                          alert("게시글 삭제에 실패했습니다: " + error.message);
+                        });
+                    }
+                  });
+                }
+              } else {
+                if (editBtn) editBtn.classList.add("hidden");
+                if (deleteBtn) deleteBtn.classList.add("hidden");
               }
             });
           } else {
