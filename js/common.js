@@ -26,7 +26,7 @@ function loadHeaderFooter() {
     window.location.pathname.includes("/ministry/") ||
     window.location.pathname.includes("/contact/")
   ) {
-    pathPrefix = "./";
+    pathPrefix = "../";
   }
   // else: root 폴더에 있을 경우 pathPrefix는 빈 문자열('')이 됩니다.
 
