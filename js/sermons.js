@@ -114,12 +114,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // 수정 모드: 'sermons' 컬렉션에 업데이트
             await db.collection("sermons").doc(postId).update(postData);
             alert("설교 말씀이 성공적으로 수정되었습니다.");
-            window.location.href = `view.html?id=${postId}`;
+            window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
             // 작성 모드: 'sermons' 컬렉션에 추가 ⭐ 수정 완료
             await db.collection("sermons").add(postData);
             alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "list.html";
+            window.location.href = "./sermons/list.html";
           }
         } catch (error) {
           console.error("Error saving document: ", error);
@@ -251,13 +251,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           html += `
-            <tr>
-                <td class="col-num">${postNumber}</td>
-                <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
-                <td class="col-author">${authorDisplay}</td>
-                <td class="col-date">${createdDate}</td>
-            </tr>
-            `;
+          <tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>
+            `;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
