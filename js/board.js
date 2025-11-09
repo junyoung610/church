@@ -1,9 +1,8 @@
 // church/js/write.js
 
-// 이미 board.js에서 firebase, db, auth가 선언되어 있으면 그대로 재사용
-const db = window.db || firebase.firestore();
-const storage = window.storage || firebase.storage();
-const auth = window.auth || firebase.auth();
+window.db = firebase.firestore();
+window.auth = firebase.auth();
+window.storage = firebase.storage();
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("write-form");
