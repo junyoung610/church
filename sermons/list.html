@@ -43,7 +43,33 @@
       <div class="inner">
         <section class="board-list-section inner">
           <h2>설교 말씀</h2>
-          <a href="./sermons/write.html" class="button">설교 말씀 작성</a>
+
+          <div class="board-header">
+            <p class="total-count">총 <span id="total-posts">0</span>건</p>
+          </div>
+
+          <div class="table-responsive">
+            <table class="notice-table">
+              <thead></thead>
+              <tbody id="notice-list-tbody">
+                <tr>
+                  <td colspan="4">게시글을 불러오는 중...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="board-controls" style="text-align: right; margin-top: 20px">
+            <a
+              href="./sermons/write.html"
+              id="write-post-btn"
+              class="primary-btn hidden"
+              style="width: auto; padding: 10px 20px"
+              >글쓰기</a
+            >
+          </div>
+
+          <div class="pagination"></div>
         </section>
       </div>
     </main>
