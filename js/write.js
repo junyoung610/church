@@ -1,8 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const db = window.db;
-  const auth = window.auth;
-  const storage = window.storage;
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, storage, auth } from "./firebaseInit.js";
 
+document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("write-form");
   const titleInput = document.getElementById("post-title");
   const contentInput = document.getElementById("post-content");
@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const uploadedFiles = [];
 
       for (const file of files) {
-        const fileRef = storage.ref(`uploads/${Date.now()}_${file.name}`);
-        const snapshot = await fileRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
+        const fileRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
 
         uploadedFiles.push({
           name: file.name,
@@ -42,12 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      await db.collection("notices").add({
+      await addDoc(collection(db, "notices"), {
         title,
         content,
         authorName: user.displayName || "익명",
         authorEmail: user.email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: serverTimestamp(),
         attachments: uploadedFiles,
       });
 
