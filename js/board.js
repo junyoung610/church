@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------------------------------
   // I. 글쓰기 페이지 (write.html) 로직
   // -----------------------------------------------------
-  if (currentPath.includes("./board/write.html")) {
+  if (currentPath.includes("write.html")) {
     const form = document.getElementById("write-form");
 
     // 1. 접근 권한 확인
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
           html += `
                     <tr>
                         <td class="col-num">${postNumber}</td>
-                        <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                        <td class="col-title"><a href="./board/view.html?id=${docId}">${post.title}</a></td>
                         <td class="col-author">${authorDisplay}</td>
                         <td class="col-date">${createdDate}</td>
                     </tr>
