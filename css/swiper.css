@@ -1,3 +1,7 @@
+section .Swiper-box {
+  padding: 0;
+}
+
 .Swiper-box {
   height: 600px;
 }
