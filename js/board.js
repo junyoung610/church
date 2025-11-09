@@ -1,6 +1,7 @@
-// church/js/board.js - 최종 통합 및 오류 수정 버전
+// church/js/board.js - 최종 통합 및 중복 선언 오류 해결 버전
 
-// Firebase 객체는 HTML에서 로드되므로, 전역에서 가져옵니다.
+// ⭐ 파일 최상단에서 Firebase 객체를 한 번만 선언합니다.
+// 이 객체들은 HTML에서 Firebase SDK 로드 후 생성됩니다.
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          // ⭐ 1. Firestore에서 사용자 이름(name) 로드 (정확도 개선)
+          // Firestore에서 사용자 이름(name) 로드
           const userDoc = await db.collection("users").doc(user.uid).get();
           let authorName = "익명";
           if (userDoc.exists) {
@@ -70,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
             title,
             content,
             authorId: user.uid,
-            authorName: authorName, // 로드된 이름 사용
+            authorName: authorName,
             authorEmail: user.email,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             views: 0,
@@ -92,14 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("등록 중 오류가 발생했습니다: " + error.message);
           }
         }
-      });
-    }
-
-    // 2. 취소 버튼 처리 (write.html에 cancel-write 버튼이 있다면)
-    const cancelWriteButton = document.getElementById("cancel-write");
-    if (cancelWriteButton) {
-      cancelWriteButton.addEventListener("click", () => {
-        window.location.href = "notice.html";
       });
     }
   }
@@ -166,13 +159,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           html += `
-              <tr>
-                  <td class="col-num">${postNumber}</td>
-                  <td class="col-title"><a href="board/view.html?id=${docId}">${post.title}</a></td>
-                  <td class="col-author">${authorDisplay}</td>
-                  <td class="col-date">${createdDate}</td>
-              </tr>
-              `;
+                    <tr>
+                        <td class="col-num">${postNumber}</td>
+                        <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                        <td class="col-author">${authorDisplay}</td>
+                        <td class="col-date">${createdDate}</td>
+                    </tr>
+                    `;
         });
 
         listBody.innerHTML = html;
@@ -184,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // ✅ 숫자 기반 페이지네이션 UI 생성
+    // ✅ 숫자 기반 페이지네이션 UI 생성 (이벤트 리스너 포함)
     function updatePaginationUI() {
       let pagesHtml = "";
       for (let i = 1; i <= totalPages; i++) {
@@ -195,10 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (paginationContainer) {
         paginationContainer.innerHTML = `
-          <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
-          ${pagesHtml}
-          <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
-          `;
+                <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
+                ${pagesHtml}
+                <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
+                `;
 
         // Event Listeners for Pagination
         paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
@@ -244,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((doc) => {
           if (doc.exists) {
             const post = doc.data();
-            const postViews = post.views || 0; // 조회수가 없을 경우 0으로 초기화
+            const postViews = post.views || 0;
 
             // 뷰 카운트 증가 (비동기 처리)
             db.collection("notices")
@@ -264,10 +257,10 @@ document.addEventListener("DOMContentLoaded", () => {
               post.authorName || post.authorEmail || "미상"
             }`;
             document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
-            document.getElementById("post-views").textContent = `조회수: ${postViews + 1}`; // +1 된 값 표시
+            document.getElementById("post-views").textContent = `조회수: ${postViews + 1}`;
             document.getElementById("post-content-view").textContent = post.content;
 
-            // 5-2. 수정/삭제 버튼 표시 및 이벤트 할당 (본인 글만 수정/삭제 가능)
+            // 5-2. 수정/삭제 버튼 표시 및 이벤트 할당
             auth.onAuthStateChanged((user) => {
               const editBtn = document.getElementById("edit-post-btn");
               const deleteBtn = document.getElementById("delete-post-btn");
@@ -294,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                   });
                 }
-                // (Edit event listener can be added here)
               } else {
                 if (editBtn) editBtn.classList.add("hidden");
                 if (deleteBtn) deleteBtn.classList.add("hidden");
