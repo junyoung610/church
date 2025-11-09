@@ -170,12 +170,8 @@
 
 /* 게시글 보기 스타일 */
 .post-view-section {
-  max-width: 900px;
-  margin: 50px auto;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .post-view-section h2 {
@@ -205,4 +201,13 @@
   margin-top: 40px;
   border-top: 1px solid #eee;
   padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.post-controls button {
+  width: 70px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #1e3b5e;
+  color: #fff;
 }
