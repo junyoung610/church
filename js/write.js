@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       alert("게시글이 등록되었습니다.");
-      window.location.href = "notice.html";
+      window.location.href = "./board/notice.html";
     } catch (error) {
       console.error("글쓰기 오류:", error);
       alert("등록 중 오류가 발생했습니다.");

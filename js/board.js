@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------------------------------
   // I. 글쓰기 페이지 (write.html) 로직
   // -----------------------------------------------------
-  if (currentPath.includes("write.html")) {
+  if (currentPath.includes("./board/write.html")) {
     const form = document.getElementById("write-form");
 
     // 1. 접근 권한 확인
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
 
           alert("게시글이 성공적으로 등록되었습니다.");
-          window.location.href = "notice.html";
+          window.location.href = "./board/notice.html";
         } catch (error) {
           console.error("글쓰기 오류:", error);
           if (
@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .delete()
                         .then(() => {
                           alert("게시글이 성공적으로 삭제되었습니다.");
-                          window.location.href = "notice.html";
+                          window.location.href = "./board/notice.html";
                         })
                         .catch((error) => {
                           console.error("삭제 오류:", error);
