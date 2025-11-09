@@ -179,7 +179,7 @@ if (isSermonsView) {
 
             if (user && user.email === post.author) {
               // 수정 버튼: write.html로 이동 + mode=edit 파라미터 추가
-              editButton.href = `write.html?id=${postId}&mode=edit`;
+              editButton.href = `./sermons/write.html?id=${postId}&mode=edit`;
               editButton.classList.remove("hidden");
 
               // 삭제 버튼: deletePost 함수 연결
@@ -227,7 +227,7 @@ if (isSermonsEdit) {
           // 현재 로그인 사용자와 작성자 일치 여부 확인
           if (firebase.auth().currentUser && firebase.auth().currentUser.email !== post.author) {
             alert("수정 권한이 없습니다.");
-            window.location.href = `view.html?id=${postId}`;
+            window.location.href = `./sermons/view.html?id=${postId}`;
             return;
           }
 
