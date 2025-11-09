@@ -104,11 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isEditMode) {
             await db.collection("sermons").doc(postId).update(postData);
             alert("설교 말씀이 성공적으로 수정되었습니다.");
-            window.location.href = `view.html?id=${postId}`;
+            window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
             await db.collection("sermons").add(postData);
             alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "list.html";
+            window.location.href = "./sermons/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);

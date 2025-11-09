@@ -103,12 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (isEditMode) {
             await db.collection("praise").doc(postId).update(postData);
-            alert("설교 말씀이 성공적으로 수정되었습니다.");
-            window.location.href = `view.html?id=${postId}`;
+            alert("찬양이 성공적으로 수정되었습니다.");
+            window.location.href = `./praise/view.html?id=${postId}`;
           } else {
             await db.collection("praise").add(postData);
-            alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "list.html";
+            alert("찬양이 성공적으로 작성되었습니다.");
+            window.location.href = "./praise/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
