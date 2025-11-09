@@ -213,8 +213,7 @@ footer {
   .mobile-toggle {
     display: flex;
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 10px;
   }
   /* church/common/header.css - @media screen and (max-width: 1100px) 내부 */
 
