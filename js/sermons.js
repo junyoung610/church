@@ -274,6 +274,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const titleElement = document.querySelector(".post-view-section h2");
             if (titleElement) titleElement.textContent = post.title; // post-meta 영역의 데이터는 view.html에 없으므로 (현재 코드 기준),
 
+            // ⭐ 1. HTML 요소에 데이터 삽입 (view.html의 ID와 일치)
+            document.getElementById("post-title-view").textContent = post.title; // ⭐ ID 수정
+            document.getElementById("post-author").textContent = `작성자: ${
+              post.authorName || post.authorEmail || "미상"
+            }`;
+            document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
+            document.getElementById("post-views").textContent = `조회수: ${postViews}`;
+            document.getElementById("post-content-view").textContent = post.content;
+
             // 상세 내용을 표시하는 로직만 유지합니다.
 
             document.getElementById("post-content-view").textContent = post.content; // ⭐ 유튜브 영상 임베드
@@ -288,7 +297,15 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector(".post-view-section h2").textContent =
               "게시글을 찾을 수 없습니다.";
           }
+          // ⭐ 2. 목록으로 버튼 이벤트 추가 ⭐
+          const listBtn = document.getElementById("list-btn");
+          if (listBtn) {
+            listBtn.addEventListener("click", () => {
+              window.location.href = "list.html";
+            });
+          }
         })
+
         .catch((error) => {
           console.error("게시글 상세 로드 오류:", error);
           document.querySelector(".post-view-section h2").textContent = "데이터 로드 오류";
