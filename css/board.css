@@ -264,6 +264,7 @@
     font-size: 14px;
   }
 
-  /* 테이블 너비 조정 (가로 스크롤 허용 시) - 그대로 두면 가로 스크롤 발생 */
-  /* .col-title, .col-author, .col-date 너비는 유지하거나 제거하여 유동적으로 만듦 */
+  .notice-table .col-title {
+    width: 30%;
+  }
 }
