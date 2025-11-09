@@ -175,6 +175,7 @@
 }
 
 .post-view-section h2 {
+  font-weight: 700;
   text-align: left;
   border-bottom: 2px solid #1e3b5e;
   padding-bottom: 15px;
@@ -192,7 +193,9 @@
 
 .post-content {
   min-height: 200px;
-  line-height: 1.8;
+  line-height: 1.6;
+  font-weight: 400;
+  font-size: 20px;
   white-space: pre-wrap; /* 줄바꿈 유지 */
 }
 
