@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <base href="/church/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의정부길교회</title>
+    <link rel="shortcut icon" href="./common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="./css/Reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./common/common.css" />
+    <link rel="stylesheet" href="./common/header.css" />
+
+    <link rel="stylesheet" href="./css/board.css" />
+
+    <!-- script -->
+    <script src="./js/common.js" defer></script>
+
+    <!-- login script -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAk2ej1PQqu5uStG7tcqGDQ5LxYeitWY2U",
+        authDomain: "church-f6f22.firebaseapp.com",
+        projectId: "church-f6f22",
+        storageBucket: "church-f6f22.firebasestorage.app",
+        messagingSenderId: "848773880367",
+        appId: "1:848773880367:web:3e82746a59823ffcfb44da",
+        measurementId: "G-5P0HVNX47W",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+  <body>
+    <!-- header#header+main#main+footer#footer -->
+    <header id="header"></header>
+
+    <main id="main">
+      <div class="inner">
+        <section class="board-write-section inner">
+          <h2>설교 말씀 작성</h2>
+          <form id="write-form" onsubmit="savePost(event, 'sermons')">
+            <div class="form-group">
+              <label for="title">제목</label>
+              <input type="text" id="title" required />
+            </div>
+
+            <div class="form-group">
+              <label for="youtube_link">유튜브 링크</label>
+              <input type="url" id="youtube_link" placeholder="예: https://youtu.be/..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="content">내용</label>
+              <textarea id="content" rows="10" required></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="submit-button">작성 완료</button>
+              <a href="list.html" class="button secondary">취소</a>
+            </div>
+            <p id="error-message" class="error-message"></p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer id="footer"></footer>
+    <script src="./js/auth.js"></script>
+    <script src="./js/board.js"></script>
+    <script src="./js/sermons.js"></script>
+  </body>
+</html>
