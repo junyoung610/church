@@ -1,10 +1,8 @@
 // church/js/board.js - 최종 통합 및 중복 선언 오류 해결 버전
 
-// ⭐ 파일 최상단에서 Firebase 객체를 한 번만 선언합니다.
-// 이 객체들은 HTML에서 Firebase SDK 로드 후 생성됩니다.
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+window.db = firebase.firestore();
+window.auth = firebase.auth();
+window.storage = firebase.storage();
 
 document.addEventListener("DOMContentLoaded", () => {
   const currentPath = window.location.pathname;
