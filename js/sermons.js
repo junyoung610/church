@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "list.html";
+                window.location.href = "./sermons/list.html";
               });
             }
           } else {
