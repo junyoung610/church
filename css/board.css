@@ -51,6 +51,11 @@
   border-top: 2px solid #1e3b5e;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
 .notice-table th,
 .notice-table td {
   padding: 15px;
@@ -170,7 +175,7 @@
 
 /* 게시글 보기 스타일 */
 .post-view-section {
-  max-width: 100%;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -213,4 +218,52 @@
   border-radius: 10px;
   background-color: #1e3b5e;
   color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .board-list-section h2,
+  .board-write-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  /* 게시판 헤더 (총 개수 및 검색) */
+  .board-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .board-header .search-box {
+    width: 100%;
+    display: flex;
+    margin-top: 10px;
+  }
+  .board-header .search-box input {
+    flex-grow: 1;
+    border-radius: 4px 0 0 4px;
+  }
+  .board-header .search-box button {
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* 상세 페이지 요소 간격 조정 */
+  .post-view-section,
+  .board-write-section {
+    margin: 20px 0;
+    padding: 15px;
+    max-width: 100%; /* 너비를 100%로 풀고 패딩으로 공간 확보 */
+  }
+
+  .post-content {
+    min-height: 150px;
+    font-size: 16px;
+  }
+
+  .notice-table th,
+  .notice-table td {
+    padding: 10px 5px; /* 모바일에서 패딩 줄이기 */
+    font-size: 14px;
+  }
+
+  /* 테이블 너비 조정 (가로 스크롤 허용 시) - 그대로 두면 가로 스크롤 발생 */
+  /* .col-title, .col-author, .col-date 너비는 유지하거나 제거하여 유동적으로 만듦 */
 }
