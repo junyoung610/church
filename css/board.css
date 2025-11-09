@@ -176,9 +176,11 @@
 }
 
 #write-form button[type="submit"] {
-  width: 150px;
-  padding: 15px;
-  left: 0;
+  width: 100px;
+  padding: 10px;
+  background-color: #1e3b5e;
+  color: #fff;
+  border-radius: 5px;
 }
 
 /* church/css/board.css 하단에 추가 */
@@ -275,7 +277,7 @@
   /* 상세 페이지 요소 간격 조정 */
   .post-view-section,
   .board-write-section {
-    margin: 20px 0;
+    margin: 0 auto;
     padding: 15px;
     max-width: 100%; /* 너비를 100%로 풀고 패딩으로 공간 확보 */
   }
