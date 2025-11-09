@@ -42,24 +42,14 @@
       <div class="inner">
         <section class="board-write-section">
           <h2>새 글 작성</h2>
-          <form id="write-form" class="write-form">
-            <div class="input-group">
-              <label for="post-title">제목</label>
-              <input type="text" id="post-title" required placeholder="제목을 입력하세요" />
-            </div>
-            <div class="input-group">
-              <label for="post-content">내용</label>
-              <textarea
-                id="post-content"
-                rows="15"
-                required
-                placeholder="내용을 입력하세요"
-              ></textarea>
-            </div>
-            <div class="button-group">
-              <button type="submit" class="primary-btn">등록</button>
-              <button type="button" id="cancel-write" class="secondary-btn">취소</button>
-            </div>
+          <form id="write-form">
+            <input type="text" id="title" placeholder="제목" required />
+            <textarea id="content" placeholder="내용" required></textarea>
+
+            <label for="file">첨부파일</label>
+            <input type="file" id="file" multiple />
+
+            <button type="submit">등록</button>
           </form>
         </section>
       </div>
@@ -68,5 +58,6 @@
     <footer id="footer"></footer>
     <script src="./js/auth.js"></script>
     <script src="./js/board.js"></script>
+    <script src="./js/write.js"></script>
   </body>
 </html>
