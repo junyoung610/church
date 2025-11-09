@@ -125,27 +125,29 @@
 
 /* 글쓰기 폼 스타일 */
 .board-write-section {
-  max-width: 800px;
-  margin: 50px auto;
+  width: 100%;
   padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .write-form .input-group {
   margin-bottom: 20px;
 }
 
-.write-form label {
+#write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#write-form label {
   display: block;
   font-weight: bold;
   margin-bottom: 5px;
   color: #1e3b5e;
 }
 
-.write-form input[type="text"],
-.write-form textarea {
+#write-form input[type="text"],
+#write-form textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -154,7 +156,7 @@
   font-size: 16px;
 }
 
-.write-form textarea {
+#write-form textarea {
   resize: vertical;
 }
 
