@@ -45,6 +45,10 @@ section {
   padding: 50px 0;
 }
 
+section .Swiper-box {
+  padding: 0;
+}
+
 .inner {
   width: 1370px;
   margin: 0 auto;
@@ -70,6 +74,10 @@ section {
 @media screen and (max-width: 768px) {
   section {
     padding: 20px 0;
+  }
+
+  section .Swiper-box {
+    padding: 0;
   }
 
   .logo {

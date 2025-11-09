@@ -183,12 +183,6 @@
 
 /* church/css/board.css 하단에 추가 */
 
-/* 게시글 보기 스타일 */
-.post-view-section {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
 .post-view-section h2 {
   font-weight: 700;
   text-align: left;
