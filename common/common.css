@@ -41,10 +41,13 @@ a {
   color: inherit;
 }
 
+section {
+  padding: 50px 0;
+}
+
 .inner {
   width: 1370px;
   margin: 0 auto;
-  max-width: 95%;
 }
 
 .logo {
@@ -65,6 +68,10 @@ a {
 }
 
 @media screen and (max-width: 768px) {
+  section {
+    padding: 20px 0;
+  }
+
   .logo {
     max-width: 120px; /* 로고 더 작게 */
   }
