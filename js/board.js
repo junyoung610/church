@@ -258,6 +258,31 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("post-views").textContent = `조회수: ${postViews + 1}`;
             document.getElementById("post-content-view").textContent = post.content;
 
+            const attachmentList = document.getElementById("attachment-list");
+            const postAttachmentsContainer = document.getElementById("post-attachments");
+
+            if (post.attachments && post.attachments.length > 0) {
+              let attachmentsHtml = "";
+              post.attachments.forEach((file) => {
+                // 파일 다운로드 링크와 파일 크기 표시
+                attachmentsHtml += `
+                        <li>
+                            <a href="${file.url}" target="_blank" download>
+                                🔗 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                            </a>
+                        </li>
+                    `;
+              });
+
+              if (attachmentList) attachmentList.innerHTML = attachmentsHtml;
+
+              // 첨부 파일이 있다면 숨김 클래스 제거
+              if (postAttachmentsContainer) postAttachmentsContainer.classList.remove("hidden");
+            } else {
+              // 첨부 파일이 없다면 해당 영역을 완전히 숨김
+              if (postAttachmentsContainer) postAttachmentsContainer.classList.add("hidden");
+            }
+
             // 5-2. 수정/삭제 버튼 표시 및 이벤트 할당
             auth.onAuthStateChanged((user) => {
               const editBtn = document.getElementById("edit-post-btn");
