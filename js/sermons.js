@@ -1,12 +1,12 @@
-// junyoung610/.../js/sermons.js - 최종 오류 수정 및 기능 통합 완료
+// junyoung610/.../js/sermons.js - 최종 완성 및 오류 수정 버전
+
+// Firebase 객체는 auth.js가 로드된 후 전역에서 사용 가능합니다.
+// board.js에서와 마찬가지로 전역 객체로 사용합니다.
 
 // ------------------------------------------------------------------
 // SECTION I: Utility Functions for YouTube (전역 함수)
 // ------------------------------------------------------------------
 
-/**
- * YouTube URL에서 비디오 ID를 추출합니다.
- */
 function getYouTubeVideoId(url) {
   if (!url) return null;
   try {
@@ -17,25 +17,14 @@ function getYouTubeVideoId(url) {
       return urlObj.pathname.substring(1);
     }
   } catch (e) {
-    return null; // URL 형식이 아닐 경우
+    return null;
   }
   return null;
 }
 
-/**
- * 비디오 ID를 사용하여 임베드 iframe HTML을 생성합니다.
- */
 function createYouTubeIframe(videoId) {
   if (!videoId) return "";
-  return `
-        <iframe width="100%" height="450" 
-            src="https://www.youtube.com/embed/${videoId}" 
-            title="YouTube video player" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    `;
+  return `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 }
 
 // ------------------------------------------------------------------
@@ -43,7 +32,7 @@ function createYouTubeIframe(videoId) {
 // ------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  // auth, db 객체는 전역에서 사용합니다.
+  // Firebase 객체는 DOMContentLoaded 내에서 안전하게 참조합니다.
   const auth = firebase.auth();
   const db = firebase.firestore();
 
@@ -51,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (currentPath.includes("sermons/write.html")) {
     const form = document.getElementById("write-form");
-    const submitButton = document.querySelector('button[type="submit"]'); // 1. 접근 권한 확인
+    const submitButton = document.querySelector('button[type="submit"]');
 
     auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -67,9 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const user = auth.currentUser;
-        if (!user) return;
+        if (!user) return; // ... (데이터 및 유효성 검사 로직 유지) ...
 
         const title = titleInput.value.trim();
         const content = contentInput.value.trim();
@@ -87,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          // Firestore에서 사용자 이름(name) 로드 (작성자 이름 정확도 개선)
           const userDoc = await db.collection("users").doc(user.uid).get();
           let authorName = user.email;
           if (userDoc.exists) {
@@ -111,21 +98,19 @@ document.addEventListener("DOMContentLoaded", () => {
           const isEditMode = urlParams.get("mode") === "edit" && postId;
 
           if (isEditMode) {
-            // 수정 모드: 'sermons' 컬렉션에 업데이트
             await db.collection("sermons").doc(postId).update(postData);
             alert("설교 말씀이 성공적으로 수정되었습니다.");
             window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
-            // 작성 모드: 'sermons' 컬렉션에 추가 ⭐ 수정 완료
             await db.collection("sermons").add(postData);
             alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "./sermons/list.html";
+            window.location.href = "list.html";
           }
         } catch (error) {
           console.error("Error saving document: ", error);
           alert("저장 중 오류가 발생했습니다: " + error.message);
         }
-      }); // ⭐ 편집 모드 데이터 로드 로직
+      }); // 편집 모드 데이터 로드 로직 (코드 유지)
 
       const urlParams = new URLSearchParams(window.location.search);
       const postId = urlParams.get("id");
@@ -164,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalPages = 0;
     let pageSnapshots = [];
 
-    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 ⭐⭐⭐
+    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 (2.번 해결) ⭐⭐⭐
     function updatePaginationUI() {
       let pagesHtml = "";
       for (let i = 1; i <= totalPages; i++) {
@@ -175,10 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (paginationContainer) {
         paginationContainer.innerHTML = `
-            <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
-            ${pagesHtml}
-            <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
-            `;
+              <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
+              ${pagesHtml}
+              <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
+              `;
 
         // Event Listeners for Pagination
         paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
@@ -206,21 +191,21 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
       }
-    } // 로그인 상태에 따라 글쓰기 버튼 표시 (auth.js와 중복될 수 있으나 안전을 위해 유지)
+    }
     // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 끝 ⭐⭐⭐
 
     auth.onAuthStateChanged((user) => {
       if (writePostBtn) {
         writePostBtn.classList.toggle("hidden", !user);
       }
-    }); // 전체 게시글 수 계산 후 첫 페이지 불러오기
+    });
 
     sermonsRef.get().then((snapshot) => {
       totalCount = snapshot.size;
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
       loadPage(1);
-    }); // ✅ 페이지별 게시글 로드 함수
+    });
 
     async function loadPage(pageNumber) {
       let query = sermonsRef.limit(POSTS_PER_PAGE);
@@ -237,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1]; // ⭐ 누락된 핵심 렌더링 로직 ⭐
+        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1]; // ⭐ 누락된 핵심 렌더링 로직 (공백 제거하여 &nbsp; 문제 해결) ⭐
 
         const startNumber = totalCount - (pageNumber - 1) * POSTS_PER_PAGE;
         let html = "";
@@ -250,15 +235,12 @@ document.addEventListener("DOMContentLoaded", () => {
             : "날짜 없음";
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
-          html += `
-          <tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>
-            `;
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
         updatePaginationUI();
       } catch (error) {
-        // try 블록에 대한 catch 블록 추가
         console.error("게시글 로드 중 오류:", error);
         listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       }
@@ -287,14 +269,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const postViews = (post.views || 0) + 1;
             const createdDate = post.createdAt
               ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
-              : "날짜 없음"; // HTML 요소에 데이터 삽입
+              : "날짜 없음"; // ⭐ HTML 요소 ID 수정: post-title-view 등 view.html에 맞는 ID로 수정 필요 // view.html에는 post-title-view가 없으므로 h2 태그를 직접 수정합니다. (오류 3 해결)
 
-            document.getElementById("post-title-view").textContent = post.title;
-            document.getElementById("post-author").textContent = `작성자: ${
-              post.authorName || post.authorEmail || "미상"
-            }`;
-            document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
-            document.getElementById("post-views").textContent = `조회수: ${postViews}`;
+            const titleElement = document.querySelector(".post-view-section h2");
+            if (titleElement) titleElement.textContent = post.title; // post-meta 영역의 데이터는 view.html에 없으므로 (현재 코드 기준),
+
+            // 상세 내용을 표시하는 로직만 유지합니다.
+
             document.getElementById("post-content-view").textContent = post.content; // ⭐ 유튜브 영상 임베드
 
             const videoId = post.youtube_videoId || getYouTubeVideoId(post.youtube_link);
@@ -302,11 +283,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (videoId && videoContainer) {
               videoContainer.innerHTML = createYouTubeIframe(videoId);
-            } // (수정/삭제 버튼 로직은 board.js의 해당 부분을 참고하여 추가해야 합니다.)
+            }
           } else {
             document.querySelector(".post-view-section h2").textContent =
               "게시글을 찾을 수 없습니다.";
           }
+        })
+        .catch((error) => {
+          console.error("게시글 상세 로드 오류:", error);
+          document.querySelector(".post-view-section h2").textContent = "데이터 로드 오류";
         });
     }
   }
