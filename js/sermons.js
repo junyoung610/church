@@ -1,10 +1,5 @@
 // junyoung610/.../js/sermons.js - 최종 오류 수정 및 기능 통합 완료
 
-// ⭐ 파일 최상단에서 Firebase 객체를 한 번만 선언합니다.
-const auth = firebase.auth();
-const db = firebase.firestore();
-// Storage는 sermons에서 직접 사용하지 않으므로 제거합니다.
-
 // ------------------------------------------------------------------
 // SECTION I: Utility Functions for YouTube (전역 함수)
 // ------------------------------------------------------------------
@@ -31,7 +26,7 @@ function getYouTubeVideoId(url) {
  * 비디오 ID를 사용하여 임베드 iframe HTML을 생성합니다.
  */
 function createYouTubeIframe(videoId) {
-  if (!videoId) return ""; // height: 450px을 기준으로 반응형 임베드 HTML을 생성합니다.
+  if (!videoId) return "";
   return `
         <iframe width="100%" height="450" 
             src="https://www.youtube.com/embed/${videoId}" 
@@ -48,6 +43,10 @@ function createYouTubeIframe(videoId) {
 // ------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
+  // auth, db 객체는 전역에서 사용합니다.
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
   const currentPath = window.location.pathname; // ----------------------------------------------------- // II. 글쓰기/수정 페이지 (sermons/write.html) 로직 // -----------------------------------------------------
 
   if (currentPath.includes("sermons/write.html")) {
@@ -152,13 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
   } // ----------------------------------------------------- // III. 목록 페이지 (sermons/list.html) 로직 // -----------------------------------------------------
 
   if (currentPath.includes("sermons/list.html")) {
-    // board.js의 목록 로드 로직을 복사하여 컬렉션 이름만 sermons로 변경
-
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
     const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
-    const writePostBtn = document.querySelector("#write-post-btn"); // ⭐ 컬렉션 이름: sermons
+    const writePostBtn = document.querySelector("#write-post-btn");
 
     const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
@@ -167,12 +164,50 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalPages = 0;
     let pageSnapshots = [];
 
-    // ⭐⭐ 누락된 페이지네이션 UI 업데이트 함수 정의 ⭐⭐
+    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 ⭐⭐⭐
     function updatePaginationUI() {
-      // 이 함수가 정의되어 있지 않아 에러가 났습니다.
-      // board.js의 해당 로직을 복사해 넣으면 됩니다.
-      // 현재는 에러를 방지하기 위해 빈 함수로 정의합니다.
+      let pagesHtml = "";
+      for (let i = 1; i <= totalPages; i++) {
+        pagesHtml += `<a href="#" class="${
+          i === currentPage ? "active" : ""
+        }" data-page="${i}">${i}</a>`;
+      }
+
+      if (paginationContainer) {
+        paginationContainer.innerHTML = `
+            <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
+            ${pagesHtml}
+            <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
+            `;
+
+        // Event Listeners for Pagination
+        paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const page = parseInt(e.target.dataset.page);
+            if (page !== currentPage) loadPage(page);
+          });
+        });
+
+        const prevBtn = paginationContainer.querySelector(".prev");
+        const nextBtn = paginationContainer.querySelector(".next");
+
+        if (prevBtn) {
+          prevBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (currentPage > 1) loadPage(currentPage - 1);
+          });
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (currentPage < totalPages) loadPage(currentPage + 1);
+          });
+        }
+      }
     } // 로그인 상태에 따라 글쓰기 버튼 표시 (auth.js와 중복될 수 있으나 안전을 위해 유지)
+    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 끝 ⭐⭐⭐
 
     auth.onAuthStateChanged((user) => {
       if (writePostBtn) {
@@ -216,13 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           html += `
-            <tr>
-                <td class="col-num">${postNumber}</td>
-                <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
-                <td class="col-author">${authorDisplay}</td>
-                <td class="col-date">${createdDate}</td>
-            </tr>
-            `;
+            <tr>
+                <td class="col-num">${postNumber}</td>
+                <td class="col-title"><a href="view.html?id=${docId}">${post.title}</a></td>
+                <td class="col-author">${authorDisplay}</td>
+                <td class="col-date">${createdDate}</td>
+            </tr>
+            `;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -232,10 +267,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("게시글 로드 중 오류:", error);
         listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       }
-    } // loadPage 함수 끝
-  } // ------------------------------------- 목록 페이지 로직 끝 // ----------------------------------------------------- // IV. 상세 보기 페이지 (sermons/view.html) 로직 // -----------------------------------------------------
-  // (Pagination UI 생성 및 이벤트 리스너 로직은 board.js의 해당 부분을 참고하여 추가해야 합니다.)
-  // -----------------------------------------------------
+    }
+  } // ----------------------------------------------------- // IV. 상세 보기 페이지 (sermons/view.html) 로직 // -----------------------------------------------------
 
   if (currentPath.includes("sermons/view.html")) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -281,5 +314,5 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
     }
-  } // ------------------------------------- 상세 보기 로직 끝
-}); // DOMContentLoaded 이벤트 리스너 끝
+  }
+});
