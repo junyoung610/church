@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <base href="/church/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>의정부길교회</title>
+    <link rel="shortcut icon" href="./common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="./css/Reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./common/common.css" />
+    <link rel="stylesheet" href="./common/header.css" />
+
+    <link rel="stylesheet" href="./css/board.css" />
+
+    <!-- script -->
+    <script src="./js/common.js" defer></script>
+
+    <!-- login script -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAk2ej1PQqu5uStG7tcqGDQ5LxYeitWY2U",
+        authDomain: "church-f6f22.firebaseapp.com",
+        projectId: "church-f6f22",
+        storageBucket: "church-f6f22.firebasestorage.app",
+        messagingSenderId: "848773880367",
+        appId: "1:848773880367:web:3e82746a59823ffcfb44da",
+        measurementId: "G-5P0HVNX47W",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+  <body>
+    <!-- header#header+main#main+footer#footer -->
+    <header id="header"></header>
+
+    <main id="main">
+      <div class="inner">
+        <section class="board-list-section inner">
+          <h2>설교 말씀</h2>
+
+          <div class="board-header">
+            <p class="total-count">총 <span id="total-posts">0</span>건</p>
+          </div>
+
+          <div class="table-responsive">
+            <table class="notice-table">
+              <thead>
+                <tr>
+                  <th class="col-num">번호</th>
+                  <th class="col-title">제목</th>
+                  <th class="col-author">작성자</th>
+                  <th class="col-date">작성일</th>
+                </tr>
+              </thead>
+              <tbody id="notice-list-tbody">
+                <tr>
+                  <td colspan="4">게시글을 불러오는 중...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="board-controls" style="text-align: right; margin-top: 20px">
+            <a
+              href="./praise/write.html"
+              id="write-post-btn"
+              class="primary-btn hidden"
+              style="width: auto; padding: 10px 20px"
+              >글쓰기</a
+            >
+          </div>
+
+          <div class="pagination"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer id="footer"></footer>
+    <script src="./js/auth.js"></script>
+    <script src="./js/praise.js"></script>
+  </body>
+</html>
