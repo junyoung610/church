@@ -133,8 +133,8 @@ footer {
   display: block;
   width: 20px;
   height: 3px;
-  background-color: white;
-  margin: 4px auto;
+  background-color: #000;
+  margin: 5px auto;
   transition: all 0.3s;
 }
 .close-icon::before {
