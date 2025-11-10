@@ -288,7 +288,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (videoId && videoContainer) {
               videoContainer.innerHTML = createYouTubeIframe(videoId);
-            } // ⭐ 2. 목록으로 버튼 이벤트 추가 ⭐
+            }
+            auth.onAuthStateChanged((user) => {
+              const editBtn = document.getElementById("edit-post-btn"); // 버튼 요소 가져오기
+              const deleteBtn = document.getElementById("delete-post-btn"); // 버튼 요소 가져오기
+
+              // 작성자 UID와 현재 로그인한 사용자 UID 비교
+              if (user && user.uid === post.authorUid) {
+                // ⭐ post.authorUid를 사용해야 함
+                if (editBtn) editBtn.classList.remove("hidden");
+                if (deleteBtn) deleteBtn.classList.remove("hidden");
+                // TODO: 삭제 이벤트 리스너 할당 로직 추가
+              } else {
+                if (editBtn) editBtn.classList.add("hidden");
+                if (deleteBtn) deleteBtn.classList.add("hidden");
+              }
+            });
+            // ⭐ 2. 목록으로 버튼 이벤트 추가 ⭐
 
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
