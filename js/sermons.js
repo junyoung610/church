@@ -235,7 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
-        const startNumber = totalCount - (pageNumber - 1) * POSTS_PER_PAGE;
+        const safeTotalCount = isNaN(totalCount) ? 0 : totalCount;
+        const startNumber = safeTotalCount - (pageNumber - 1) * POSTS_PER_PAGE;
+
         let html = "";
         snapshot.forEach((doc, index) => {
           const post = doc.data();
