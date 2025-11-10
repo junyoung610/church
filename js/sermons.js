@@ -210,7 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     sermonsRef.get().then((snapshot) => {
-      totalCount = snapshot.size;
+      totalCount = parseInt(snapshot.size, 10);
+      if (isNaN(totalCount)) totalCount = 0;
+
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
       loadPage(1);
