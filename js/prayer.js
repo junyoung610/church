@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
-    const prayerRef = db.collection("").orderBy("createdAt", "desc");
+    const prayerRef = db.collection("Prayer").orderBy("createdAt", "desc");
 
     let totalCount = 0;
     let currentPage = 1;
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    Ref.get().then((snapshot) => {
+    prayerRef.get().then((snapshot) => {
       totalCount = snapshot.size;
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
@@ -212,10 +212,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     async function loadPage(pageNumber) {
-      let query = Ref.limit(POSTS_PER_PAGE);
+      let query = prayerRef.limit(POSTS_PER_PAGE);
 
       if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
-        query = Ref.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
+        query = prayerRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
       }
 
       try {
