@@ -97,11 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (isEditMode) {
             await db.collection("praise").doc(postId).update(postData);
-            alert("금요기도회가 성공적으로 수정되었습니다.");
+            alert("찬양이 성공적으로 수정되었습니다.");
             window.location.href = `./praise/view.html?id=${postId}`;
           } else {
             await db.collection("praise").add(postData);
-            alert("금요기도회가 성공적으로 작성되었습니다.");
+            alert("찬양이 성공적으로 작성되었습니다.");
             window.location.href = "./praise/list.html";
           }
         } catch (error) {

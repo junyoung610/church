@@ -97,11 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (isEditMode) {
             await db.collection("sermons").doc(postId).update(postData);
-            alert("금요기도회가 성공적으로 수정되었습니다.");
+            alert("주일예배가 성공적으로 수정되었습니다.");
             window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
             await db.collection("sermons").add(postData);
-            alert("금요기도회가 성공적으로 작성되었습니다.");
+            alert("주일예배가 성공적으로 작성되었습니다.");
             window.location.href = "./sermons/list.html";
           }
         } catch (error) {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const isEditMode = urlParams.get("mode") === "edit" && postId;
 
       if (isEditMode) {
-        document.querySelector("h2").textContent = "금요기도회 수정";
+        document.querySelector("h2").textContent = "주일예배 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
         db.collection("sermons")

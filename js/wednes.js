@@ -97,11 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (isEditMode) {
             await db.collection("wednes").doc(postId).update(postData);
-            alert("금요기도회가 성공적으로 수정되었습니다.");
+            alert("수요예배가 성공적으로 수정되었습니다.");
             window.location.href = `./wednes/view.html?id=${postId}`;
           } else {
             await db.collection("wednes").add(postData);
-            alert("금요기도회가 성공적으로 작성되었습니다.");
+            alert("수요예배가 성공적으로 작성되었습니다.");
             window.location.href = "./wednes/list.html";
           }
         } catch (error) {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const isEditMode = urlParams.get("mode") === "edit" && postId;
 
       if (isEditMode) {
-        document.querySelector("h2").textContent = "금요기도회 수정";
+        document.querySelector("h2").textContent = "수요예배 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
         db.collection("wednes")
