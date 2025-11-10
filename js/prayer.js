@@ -1,4 +1,4 @@
-// junyoung610/.../js/prayer.js - 최종 완성 및 오류 수정 버전
+// junyoung610/.../js/.js - 최종 완성 및 오류 수정 버전
 
 // ------------------------------------------------------------------
 // SECTION I: Utility Functions for YouTube (전역 함수)
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const currentPath = window.location.pathname; // ----------------------------------------------------- // II. 글쓰기/수정 페이지 (prayer/write.html) 로직 // -----------------------------------------------------
 
-  if (currentPath.includes("prayer/write.html")) {
+  if (currentPath.includes("Prayer/write.html")) {
     const form = document.getElementById("write-form");
     const submitButton = document.querySelector('button[type="submit"]');
 
@@ -102,13 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const isEditMode = urlParams.get("mode") === "edit" && postId;
 
           if (isEditMode) {
-            await db.collection("prayer").doc(postId).update(postData);
+            await db.collection("Prayer").doc(postId).update(postData);
             alert("찬양이 성공적으로 수정되었습니다.");
-            window.location.href = `./prayer/view.html?id=${postId}`;
+            window.location.href = `./Prayer/view.html?id=${postId}`;
           } else {
-            await db.collection("prayer").add(postData);
+            await db.collection("Prayer").add(postData);
             alert("찬양이 성공적으로 작성되었습니다.");
-            window.location.href = "./prayer/list.html";
+            window.location.href = "./Prayer/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("h2").textContent = "설교 말씀 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
-        db.collection("prayer")
+        db.collection("Prayer")
           .doc(postId)
           .get()
           .then((doc) => {
@@ -139,14 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   } // ----------------------------------------------------- // III. 목록 페이지 (prayer/list.html) 로직 // -----------------------------------------------------
 
-  if (currentPath.includes("prayer/list.html")) {
+  if (currentPath.includes("Prayer/list.html")) {
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
     const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
-    const prayerRef = db.collection("prayer").orderBy("createdAt", "desc");
+    const prayerRef = db.collection("").orderBy("createdAt", "desc");
 
     let totalCount = 0;
     let currentPage = 1;
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    prayerRef.get().then((snapshot) => {
+    Ref.get().then((snapshot) => {
       totalCount = snapshot.size;
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
@@ -212,10 +212,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     async function loadPage(pageNumber) {
-      let query = prayerRef.limit(POSTS_PER_PAGE);
+      let query = Ref.limit(POSTS_PER_PAGE);
 
       if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
-        query = prayerRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
+        query = Ref.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
       }
 
       try {
@@ -240,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           // ⭐ HTML 경로 수정: list.html에서 view.html로 이동 시 상대 경로 사용 (./view.html) ⭐
-          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./prayer/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./Prayer/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -250,21 +250,21 @@ document.addEventListener("DOMContentLoaded", () => {
         listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       }
     }
-  } // ----------------------------------------------------- // IV. 상세 보기 페이지 (prayer/view.html) 로직 // -----------------------------------------------------
+  } // ----------------------------------------------------- // IV. 상세 보기 페이지 (/view.html) 로직 // -----------------------------------------------------
 
-  if (currentPath.includes("prayer/view.html")) {
+  if (currentPath.includes("/view.html")) {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("id");
 
     if (postId) {
-      db.collection("prayer")
+      db.collection("Prayer")
         .doc(postId)
         .update({
           views: firebase.firestore.FieldValue.increment(1),
         })
         .catch((error) => console.error("조회수 증가 오류:", error));
 
-      db.collection("prayer")
+      db.collection("Prayer")
         .doc(postId)
         .get()
         .then((doc) => {
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "./prayer/list.html";
+                window.location.href = "./Prayer/list.html";
               });
             }
           } else {
