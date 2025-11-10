@@ -110,11 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isEditMode) {
             await db.collection("sermons").doc(postId).update(postData);
             alert("설교 말씀이 성공적으로 수정되었습니다.");
-            window.location.href = `./view.html?id=${postId}`;
+            window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
             await db.collection("sermons").add(postData);
             alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "./list.html";
+            window.location.href = "./sermons/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           // HTML 경로 수정: list.html에서 view.html로 이동 시 상대 경로 사용 (view.html)
-          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -318,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 1. 수정 버튼 이벤트 리스너 할당
                 if (editBtn) {
                   editBtn.addEventListener("click", () => {
-                    window.location.href = `./write.html?id=${postId}&mode=edit`;
+                    window.location.href = `./sermons/write.html?id=${postId}&mode=edit`;
                   });
                 }
 
@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .delete()
                         .then(() => {
                           alert("게시글이 성공적으로 삭제되었습니다.");
-                          window.location.href = "./list.html";
+                          window.location.href = "./sermons/list.html";
                         })
                         .catch((error) => {
                           console.error("삭제 오류:", error);
@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "./list.html";
+                window.location.href = "./sermons/list.html";
               });
             }
           } else {
