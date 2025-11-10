@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const content = contentInput.value.trim();
         const youtubeLink = youtubeLinkInput.value.trim();
 
-        // ⭐ 필수 필드 검사 (제목, 내용만 필수)
+        // 필수 필드 검사 (제목, 내용만 필수)
         if (!title || !content) {
           alert("제목과 내용을 입력해주세요.");
           return;
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let videoId = null;
 
-        // ⭐ 유튜브 링크가 입력된 경우에만 유효성 검사 진행
+        // 유튜브 링크가 입력된 경우에만 유효성 검사 진행
         if (youtubeLink) {
           videoId = getYouTubeVideoId(youtubeLink);
 
@@ -110,11 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (isEditMode) {
             await db.collection("sermons").doc(postId).update(postData);
             alert("설교 말씀이 성공적으로 수정되었습니다.");
-            window.location.href = `./sermons/view.html?id=${postId}`;
+            window.location.href = `./view.html?id=${postId}`;
           } else {
             await db.collection("sermons").add(postData);
             alert("설교 말씀이 성공적으로 작성되었습니다.");
-            window.location.href = "./sermons/list.html";
+            window.location.href = "./list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
@@ -210,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     sermonsRef.get().then((snapshot) => {
+      // ⭐ [NaN 해결] totalCount가 숫자인지 확인 및 NaN일 경우 0으로 처리 (첫 번째 방어)
       totalCount = parseInt(snapshot.size, 10);
       if (isNaN(totalCount)) totalCount = 0;
 
@@ -235,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
+        // ⭐ [NaN 해결] startNumber 계산 시 totalCount가 숫자가 아닐 경우를 대비 (두 번째 방어)
         const safeTotalCount = isNaN(totalCount) ? 0 : totalCount;
         const startNumber = safeTotalCount - (pageNumber - 1) * POSTS_PER_PAGE;
 
@@ -248,8 +250,8 @@ document.addEventListener("DOMContentLoaded", () => {
             : "날짜 없음";
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
-          // HTML 경로 수정: list.html에서 view.html로 이동 시 상대 경로 사용 (view.html)
-          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
+          // ⭐ [수정] HTML 경로 수정: list.html 기준 `./view.html`로 수정
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -292,21 +294,15 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("post-views").textContent = `조회수: ${postViews}`;
             document.getElementById("post-content-view").textContent = post.content;
 
-            // ⭐ 유튜브 영상 임베드 로직 (수정된 부분)
+            // 유튜브 영상 임베드 및 숨김 로직
             const videoId = post.youtube_videoId || getYouTubeVideoId(post.youtube_link);
             const videoContainer = document.getElementById("youtube-video-container");
 
             if (videoContainer) {
               if (videoId) {
-                // videoId가 있으면 iframe 생성 및 컨테이너 표시
                 videoContainer.innerHTML = createYouTubeIframe(videoId);
-                // 컨테이너가 CSS로 기본 hidden 상태라면 여기서 보이게 해야 함
-                // videoContainer.classList.remove("hidden");
               } else {
-                // videoId가 없으면 컨테이너 내용을 비워서 보이지 않게 처리
                 videoContainer.innerHTML = "";
-                // 컨테이너가 CSS로 기본 hidden 상태가 아니라면 여기서 숨겨야 함
-                // videoContainer.classList.add("hidden");
               }
             }
 
@@ -322,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 1. 수정 버튼 이벤트 리스너 할당
                 if (editBtn) {
                   editBtn.addEventListener("click", () => {
-                    window.location.href = `./sermons/write.html?id=${postId}&mode=edit`;
+                    window.location.href = `./write.html?id=${postId}&mode=edit`;
                   });
                 }
 
@@ -335,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .delete()
                         .then(() => {
                           alert("게시글이 성공적으로 삭제되었습니다.");
-                          window.location.href = "./sermons/list.html";
+                          window.location.href = "./list.html";
                         })
                         .catch((error) => {
                           console.error("삭제 오류:", error);
@@ -350,11 +346,11 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             });
 
-            // 3. 목록으로 버튼 이벤트 추가 (경로 수정)
+            // 목록으로 버튼 이벤트 (경로 수정)
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "./sermons/list.html";
+                window.location.href = "./list.html";
               });
             }
           } else {
