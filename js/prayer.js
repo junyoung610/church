@@ -56,15 +56,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const content = contentInput.value.trim();
         const youtubeLink = youtubeLinkInput.value.trim();
 
-        if (!title || !content || !youtubeLink) {
-          alert("모든 필드를 채워주세요.");
+        if (!title || !content) {
+          alert("제목과 내용을 입력해주세요");
           return;
         }
 
-        const videoId = getYouTubeVideoId(youtubeLink);
-        if (!videoId) {
-          alert("유효한 YouTube 링크를 입력해주세요.");
-          return;
+        let videoId = null;
+
+        if (youtubeLink) {
+          videoId = getYouTubeVideoId(youtubeLink);
+
+          if (!videoId) {
+            alert("유효한 YouTube 링크를 입력해주세요.");
+            return;
+          }
         }
 
         try {

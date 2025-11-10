@@ -1,4 +1,4 @@
-// 주일예배 Sermons
+// 주일예배 sermons
 
 function getYouTubeVideoId(url) {
   if (!url) return null;
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 글쓰기/수정 페이지
 
-  if (currentPath.includes("Sermons/write.html")) {
+  if (currentPath.includes("sermons/write.html")) {
     const form = document.getElementById("write-form");
     const submitButton = document.querySelector('button[type="submit"]');
 
@@ -56,15 +56,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const content = contentInput.value.trim();
         const youtubeLink = youtubeLinkInput.value.trim();
 
-        if (!title || !content || !youtubeLink) {
-          alert("모든 필드를 채워주세요.");
+        if (!title || !content) {
+          alert("제목과 내용을 입력해주세요");
           return;
         }
 
-        const videoId = getYouTubeVideoId(youtubeLink);
-        if (!videoId) {
-          alert("유효한 YouTube 링크를 입력해주세요.");
-          return;
+        let videoId = null;
+
+        if (youtubeLink) {
+          videoId = getYouTubeVideoId(youtubeLink);
+
+          if (!videoId) {
+            alert("유효한 YouTube 링크를 입력해주세요.");
+            return;
+          }
         }
 
         try {
@@ -91,13 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const isEditMode = urlParams.get("mode") === "edit" && postId;
 
           if (isEditMode) {
-            await db.collection("Sermons").doc(postId).update(postData);
+            await db.collection("sermons").doc(postId).update(postData);
             alert("금요기도회가 성공적으로 수정되었습니다.");
-            window.location.href = `./Sermons/view.html?id=${postId}`;
+            window.location.href = `./sermons/view.html?id=${postId}`;
           } else {
-            await db.collection("Sermons").add(postData);
+            await db.collection("sermons").add(postData);
             alert("금요기도회가 성공적으로 작성되었습니다.");
-            window.location.href = "./Sermons/list.html";
+            window.location.href = "./sermons/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
@@ -113,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("h2").textContent = "금요기도회 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
-        db.collection("Sermons")
+        db.collection("sermons")
           .doc(postId)
           .get()
           .then((doc) => {
@@ -129,14 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 목록 페이지
-  if (currentPath.includes("Sermons/list.html")) {
+  if (currentPath.includes("sermons/list.html")) {
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
     const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
-    const sermonsRef = db.collection("Sermons").orderBy("createdAt", "desc");
+    const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
     let totalCount = 0;
     let currentPage = 1;
@@ -227,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "날짜 없음";
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
-          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./Sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./sermons/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -245,14 +250,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const postId = urlParams.get("id");
 
     if (postId) {
-      db.collection("Sermons")
+      db.collection("sermons")
         .doc(postId)
         .update({
           views: firebase.firestore.FieldValue.increment(1),
         })
         .catch((error) => console.error("조회수 증가 오류:", error));
 
-      db.collection("Sermons")
+      db.collection("sermons")
         .doc(postId)
         .get()
         .then((doc) => {
@@ -296,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "./Sermons/list.html";
+                window.location.href = "./sermons/list.html";
               });
             }
           } else {
