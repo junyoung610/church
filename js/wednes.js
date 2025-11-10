@@ -1,12 +1,5 @@
-// junyoung610/.../js/wednes.js - 최종 완성 및 오류 수정 버전
+// 수요예배 Wednes
 
-// ------------------------------------------------------------------
-// SECTION I: Utility Functions for YouTube (전역 함수)
-// ------------------------------------------------------------------
-
-/**
- * YouTube URL에서 비디오 ID를 추출합니다.
- */
 function getYouTubeVideoId(url) {
   if (!url) return null;
   try {
@@ -22,27 +15,23 @@ function getYouTubeVideoId(url) {
   return null;
 }
 
-/**
- * 비디오 ID를 사용하여 임베드 iframe HTML을 생성합니다.
- */
+// 비디오 ID를 사용하여 임베드 iframe HTML을 생성합니다.
 function createYouTubeIframe(videoId) {
   if (!videoId) return "";
   return `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 }
 
-// ------------------------------------------------------------------
-// SECTION II, III, IV: 메인 로직 (DOMContentLoaded)
-// ------------------------------------------------------------------
+// 메인 로직
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Firebase 객체는 DOMContentLoaded 내에서 안전하게 참조합니다.
-  // 이전에 발생했던 중복 선언 오류를 방지하기 위해 여기서만 정의합니다.
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  const currentPath = window.location.pathname; // ----------------------------------------------------- // II. 글쓰기/수정 페이지 (wednes/write.html) 로직 // -----------------------------------------------------
+  const currentPath = window.location.pathname;
 
-  if (currentPath.includes("wednes/write.html")) {
+  // 글쓰기/수정 페이지
+
+  if (currentPath.includes("Wednes/write.html")) {
     const form = document.getElementById("write-form");
     const submitButton = document.querySelector('button[type="submit"]');
 
@@ -102,13 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const isEditMode = urlParams.get("mode") === "edit" && postId;
 
           if (isEditMode) {
-            await db.collection("wednes").doc(postId).update(postData);
-            alert("찬양이 성공적으로 수정되었습니다.");
-            window.location.href = `./wednes/view.html?id=${postId}`;
+            await db.collection("Wednes").doc(postId).update(postData);
+            alert("금요기도회가 성공적으로 수정되었습니다.");
+            window.location.href = `./Wednes/view.html?id=${postId}`;
           } else {
-            await db.collection("wednes").add(postData);
-            alert("찬양이 성공적으로 작성되었습니다.");
-            window.location.href = "./wednes/list.html";
+            await db.collection("Wednes").add(postData);
+            alert("금요기도회가 성공적으로 작성되었습니다.");
+            window.location.href = "./Wednes/list.html";
           }
         } catch (error) {
           console.error("Error saving document: " + error.message);
@@ -121,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const isEditMode = urlParams.get("mode") === "edit" && postId;
 
       if (isEditMode) {
-        document.querySelector("h2").textContent = "설교 말씀 수정";
+        document.querySelector("h2").textContent = "금요기도회 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
-        db.collection("wednes")
+        db.collection("Wednes")
           .doc(postId)
           .get()
           .then((doc) => {
@@ -137,23 +126,24 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       }
     }
-  } // ----------------------------------------------------- // III. 목록 페이지 (wednes/list.html) 로직 // -----------------------------------------------------
+  }
 
-  if (currentPath.includes("wednes/list.html")) {
+  // 목록 페이지
+  if (currentPath.includes("Wednes/list.html")) {
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
     const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
-    const wednesRef = db.collection("wednes").orderBy("createdAt", "desc");
+    const wednesRef = db.collection("Wednes").orderBy("createdAt", "desc");
 
     let totalCount = 0;
     let currentPage = 1;
     let totalPages = 0;
     let pageSnapshots = [];
 
-    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 ⭐⭐⭐
+    // 페이지네이션 UI
     function updatePaginationUI() {
       let pagesHtml = "";
       for (let i = 1; i <= totalPages; i++) {
@@ -169,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
             `;
 
-        // Event Listeners for Pagination
         paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
           btn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -196,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    // ⭐⭐⭐ 페이지네이션 UI 업데이트 함수 정의 끝 ⭐⭐⭐
 
     auth.onAuthStateChanged((user) => {
       if (writePostBtn) {
@@ -226,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1]; // ⭐ 누락된 핵심 렌더링 로직 (공백 제거하여 &nbsp; 문제 해결) ⭐
+        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
         const startNumber = totalCount - (pageNumber - 1) * POSTS_PER_PAGE;
         let html = "";
@@ -239,8 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "날짜 없음";
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
-          // ⭐ HTML 경로 수정: list.html에서 view.html로 이동 시 상대 경로 사용 (./view.html) ⭐
-          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./wednes/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
+          html += `<tr><td class="col-num">${postNumber}</td><td class="col-title"><a href="./Wednes/view.html?id=${docId}">${post.title}</a></td><td class="col-author">${authorDisplay}</td><td class="col-date">${createdDate}</td></tr>`;
         });
         listBody.innerHTML = html;
         currentPage = pageNumber;
@@ -250,21 +237,22 @@ document.addEventListener("DOMContentLoaded", () => {
         listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       }
     }
-  } // ----------------------------------------------------- // IV. 상세 보기 페이지 (wednes/view.html) 로직 // -----------------------------------------------------
+  }
 
-  if (currentPath.includes("wednes/view.html")) {
+  // 상세 보기 페이지
+  if (currentPath.includes("/view.html")) {
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("id");
 
     if (postId) {
-      db.collection("wednes")
+      db.collection("Wednes")
         .doc(postId)
         .update({
           views: firebase.firestore.FieldValue.increment(1),
         })
         .catch((error) => console.error("조회수 증가 오류:", error));
 
-      db.collection("wednes")
+      db.collection("Wednes")
         .doc(postId)
         .get()
         .then((doc) => {
@@ -273,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const postViews = (post.views || 0) + 1;
             const createdDate = post.createdAt
               ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
-              : "날짜 없음"; // ⭐ HTML 요소 ID 수정 및 데이터 삽입 ⭐
+              : "날짜 없음";
 
             document.getElementById("post-title-view").textContent = post.title;
             document.getElementById("post-author").textContent = `작성자: ${
@@ -281,19 +269,34 @@ document.addEventListener("DOMContentLoaded", () => {
             }`;
             document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
             document.getElementById("post-views").textContent = `조회수: ${postViews}`;
-            document.getElementById("post-content-view").textContent = post.content; // ⭐ 유튜브 영상 임베드
+            document.getElementById("post-content-view").textContent = post.content;
 
             const videoId = post.youtube_videoId || getYouTubeVideoId(post.youtube_link);
             const videoContainer = document.getElementById("youtube-video-container");
 
             if (videoId && videoContainer) {
               videoContainer.innerHTML = createYouTubeIframe(videoId);
-            } // ⭐ 2. 목록으로 버튼 이벤트 추가 ⭐
+            }
 
+            // 수정&삭제버튼
+            auth.onAuthStateChanged((user) => {
+              const editBtn = document.getElementById("edit-post-btn");
+              const deleteBtn = document.getElementById("delete-post-btn");
+
+              if (user && user.uid === post.authorUid) {
+                if (editBtn) editBtn.classList.remove("hidden");
+                if (deleteBtn) deleteBtn.classList.remove("hidden");
+              } else {
+                if (editBtn) editBtn.classList.add("hidden");
+                if (deleteBtn) deleteBtn.classList.add("hidden");
+              }
+            });
+
+            // 목록으로 버튼
             const listBtn = document.getElementById("list-btn");
             if (listBtn) {
               listBtn.addEventListener("click", () => {
-                window.location.href = "./wednes/list.html";
+                window.location.href = "./Wednes/list.html";
               });
             }
           } else {
