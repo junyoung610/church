@@ -272,7 +272,7 @@ async function loadPage(pageNumber) {
     listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
   }
 }
-
+}
 
 
   // -----------------------------------------------------
