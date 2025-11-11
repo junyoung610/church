@@ -1,0 +1,15 @@
+#banner {
+  background: #000;
+}
+
+.greeting-info {
+  font-weight: 400;
+  line-height: 2.1;
+  font-size: 30px;
+}
+@media screen and (max-width: 768px) {
+  .greeting-text,
+  .greeting-name {
+    font-size: 20px;
+  }
+}

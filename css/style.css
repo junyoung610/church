@@ -44,3 +44,47 @@ a {
   width: 1370px;
   margin: 0 auto;
 }
+
+#banner {
+  height: 250px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+#banner .title {
+  font-size: 60px;
+  font-weight: 800;
+  color: #fff;
+}
+
+#sec-menu {
+  background: #eee;
+  padding: 20px 0;
+}
+
+.menu-list dl {
+  display: flex;
+  gap: 20px;
+}
+
+.menu-list dl li {
+  font-size: 25px;
+  font-weight: 500;
+  color: #363636b3;
+}
+
+#stress {
+  font-weight: 800;
+  color: #b8860b;
+  border-bottom: 1px solid #000;
+}
+
+@media screen and (max-width: 768px) {
+  #sec-menu {
+    display: none;
+  }
+  #banner .title {
+    text-align: center;
+  }
+}

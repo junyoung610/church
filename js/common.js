@@ -20,7 +20,7 @@ function loadHeaderFooter() {
   // 💡 FIX: Base Tag를 사용하므로, pathPrefix 로직을 제거하고 절대 경로 사용
 
   // 헤더
-  fetch(`common/header.html`) // Base Tag 기준으로 common/header.html을 찾습니다.
+  fetch(`../common/header.html`) // Base Tag 기준으로 common/header.html을 찾습니다.
     .then((response) => {
       if (!response.ok) throw new Error(`Header 로드 실패: ${response.status}`);
       return response.text();
@@ -36,7 +36,7 @@ function loadHeaderFooter() {
     .catch((error) => console.error("헤더 로드 에러:", error));
 
   // 푸터
-  fetch(`common/footer.html`)
+  fetch(`../common/footer.html`)
     .then((response) => {
       if (!response.ok) throw new Error(`Footer 로드 실패: ${response.status}`);
       return response.text();
