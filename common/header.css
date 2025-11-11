@@ -21,9 +21,10 @@ header {
 }
 
 .gnb .menu-item > a {
+  font-size: 24px;
   display: block;
   color: #000;
-  font-weight: 700;
+  font-weight: 400;
   padding: 10px 0;
   transition: color 0.3s;
 }

@@ -84,7 +84,12 @@ a {
   #sec-menu {
     display: none;
   }
+
+  #banner {
+    height: 130px;
+  }
   #banner .title {
+    font-size: 40px;
     text-align: center;
   }
 }
