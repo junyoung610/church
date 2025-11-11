@@ -5,16 +5,28 @@
     <base href="/church/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>의정부길교회</title>
+
+    <!-- live sever 용 -->
+    <!-- <link rel="shortcut icon" href="../common/img/gil-church.png" type="image/png" />
+    <link rel="stylesheet" href="../css/Reset.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../common/common.css" />
+    <link rel="stylesheet" href="../common/header.css" />
+    <link rel="stylesheet" href="../css/board.css" />
+    <script src="../js/live_common.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script src="./js/board.js" dafer></script> -->
+
+    <!-- github용 -->
     <link rel="shortcut icon" href="./common/img/gil-church.png" type="image/png" />
     <link rel="stylesheet" href="./css/Reset.css" />
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./common/common.css" />
     <link rel="stylesheet" href="./common/header.css" />
-
     <link rel="stylesheet" href="./css/board.css" />
-
-    <!-- script -->
     <script src="./js/common.js" defer></script>
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/board.js" dafer></script>
 
     <!-- login script -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -36,14 +48,27 @@
     </script>
   </head>
   <body>
-    <!-- header#header+main#main+footer#footer -->
+    <!-- s: header -->
     <header id="header"></header>
+    <!-- e: header -->
 
     <main id="main">
+      <!-- s: section 공통영역 -->
+      <section id="banner">
+        <h2 class="title inner">교회소식</h2>
+      </section>
+      <section id="sec-menu">
+        <div class="menu-list inner">
+          <dl>
+            <li id="stress"><a href="./board/notice.html">교회소식</a></li>
+            <li><a href="./weekly/index.html">주보</a></li>
+            <li><a href="./gallery/pic.html">사진</a></li>
+          </dl>
+        </div>
+      </section>
+      <!-- e: section 공통영역 -->
       <div class="inner">
         <section class="board-list-section">
-          <h2>교회 소식</h2>
-
           <div class="board-header">
             <p class="total-count">총 <span id="total-posts">0</span>건</p>
             <div class="search-box">
@@ -92,7 +117,5 @@
     </main>
 
     <footer id="footer"></footer>
-    <script src="./js/auth.js"></script>
-    <script src="./js/board.js"></script>
   </body>
 </html>
