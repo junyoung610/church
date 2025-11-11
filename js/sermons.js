@@ -1,8 +1,4 @@
 // ------------------------------------------------------------------
-// junyoung610/.../js/sermons.js - 최종 완성 및 오류 수정 버전
-// ------------------------------------------------------------------
-
-// ------------------------------------------------------------------
 // SECTION I: Utility Functions for YouTube (전역 함수)
 // ------------------------------------------------------------------
 
@@ -29,24 +25,21 @@ function getYouTubeVideoId(url) {
  */
 function createYouTubeIframe(videoId) {
   if (!videoId) return "";
-  return `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${videoId}" 
-          title="YouTube video player" frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen></iframe>`;
+  return `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 }
 
 // ------------------------------------------------------------------
-// SECTION II, III, IV: 메인 로직 (DOMContentLoaded)
+// SECTION II–IV: Main Logic (DOMContentLoaded)
 // ------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Firebase 객체는 DOMContentLoaded 내에서 안전하게 참조합니다.
   const auth = firebase.auth();
   const db = firebase.firestore();
+
   const currentPath = window.location.pathname;
 
   // -----------------------------------------------------
-  // II. 글쓰기/수정 페이지 (sermons/write.html)
+  // II. 글쓰기 / 수정 페이지 (sermons/write.html)
   // -----------------------------------------------------
   if (currentPath.includes("sermons/write.html")) {
     const form = document.getElementById("write-form");
@@ -120,12 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "./list.html";
           }
         } catch (error) {
-          console.error("Error saving document: ", error);
+          console.error("Error saving document:", error.message);
           alert("저장 중 오류가 발생했습니다: " + error.message);
         }
       });
 
-      // 편집 모드 로드
+      // 수정 모드 데이터 로드
       const urlParams = new URLSearchParams(window.location.search);
       const postId = urlParams.get("id");
       const isEditMode = urlParams.get("mode") === "edit" && postId;
@@ -134,14 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("h2").textContent = "설교 말씀 수정";
         if (submitButton) submitButton.textContent = "수정 완료";
 
-        db.collection("sermons").doc(postId).get().then((doc) => {
-          if (doc.exists) {
-            const post = doc.data();
-            titleInput.value = post.title;
-            contentInput.value = post.content;
-            youtubeLinkInput.value = post.youtube_link || "";
-          }
-        });
+        db.collection("sermons")
+          .doc(postId)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const post = doc.data();
+              titleInput.value = post.title;
+              contentInput.value = post.content;
+              youtubeLinkInput.value = post.youtube_link || "";
+            }
+          });
       }
     }
   }
@@ -158,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
+    // ✅ NaN 방지용 초기화
     let totalCount = 0;
     let currentPage = 1;
     let totalPages = 0;
@@ -210,8 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     sermonsRef.get().then((snapshot) => {
-      totalCount = parseInt(snapshot.size, 10);
-      if (isNaN(totalCount)) totalCount = 0;
+      totalCount = snapshot.size || 0;
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
       if (totalCountElement) totalCountElement.textContent = totalCount;
       loadPage(1);
@@ -219,14 +215,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadPage(pageNumber) {
       let query = sermonsRef.limit(POSTS_PER_PAGE);
-
       if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
         query = sermonsRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
       }
 
       try {
         const snapshot = await query.get();
-
         if (!listBody) return;
 
         if (snapshot.empty) {
@@ -239,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
         let totalPosts = Number(totalCount);
-        if (!totalPosts || isNaN(totalPosts) || totalPosts <= 0) {
+        if (isNaN(totalPosts) || totalPosts <= 0) {
           const allSnapshot = await sermonsRef.get();
           totalPosts = allSnapshot.size || 0;
           totalCount = totalPosts;
@@ -247,7 +241,9 @@ document.addEventListener("DOMContentLoaded", () => {
           if (totalCountElement) totalCountElement.textContent = totalCount;
         }
 
-        const startNumber = totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
+        const startNumber = isNaN(totalPosts)
+          ? 0
+          : totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
 
         let html = "";
         snapshot.forEach((doc, index) => {
@@ -261,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           html += `
             <tr>
-              <td class="col-num">${postNumber}</td>
+              <td class="col-num">${isNaN(postNumber) ? "-" : postNumber}</td>
               <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
               <td class="col-author">${authorDisplay}</td>
               <td class="col-date">${createdDate}</td>
@@ -273,9 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePaginationUI();
       } catch (error) {
         console.error("게시글 로드 중 오류:", error);
-        if (listBody) {
-          listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
-        }
+        listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
       }
     }
   }
@@ -307,9 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
               : "날짜 없음";
 
             document.getElementById("post-title-view").textContent = post.title;
-            document.getElementById("post-author").textContent = `작성자: ${
-              post.authorName || post.authorEmail || "미상"
-            }`;
+            document.getElementById("post-author").textContent =
+              `작성자: ${post.authorName || post.authorEmail || "미상"}`;
             document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
             document.getElementById("post-views").textContent = `조회수: ${postViews}`;
             document.getElementById("post-content-view").textContent = post.content;
@@ -318,11 +311,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const videoContainer = document.getElementById("youtube-video-container");
 
             if (videoContainer) {
-              if (videoId) {
-                videoContainer.innerHTML = createYouTubeIframe(videoId);
-              } else {
-                videoContainer.innerHTML = "";
-              }
+              videoContainer.innerHTML = videoId
+                ? createYouTubeIframe(videoId)
+                : "";
             }
 
             const editBtn = document.getElementById("edit-post-btn");
