@@ -162,7 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function updatePaginationUI() {
       let pagesHtml = "";
       for (let i = 1; i <= totalPages; i++) {
-        pagesHtml += `<a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a>`;
+        pagesHtml += `<a href="#" class="${
+          i === currentPage ? "active" : ""
+        }" data-page="${i}">${i}</a>`;
       }
 
       if (paginationContainer) {
@@ -248,11 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
           // 3. 개별 게시글 번호 계산 및 NaN 처리 로직 적용
           let postNumber;
           if (isNaN(startNumber) || startNumber <= 0) {
-              postNumber = "-"; // 유효하지 않으면 '-' 표시
+            postNumber = "-"; // 유효하지 않으면 '-' 표시
           } else {
-              postNumber = startNumber - index; // 정상적인 번호 계산
+            postNumber = startNumber - index; // 정상적인 번호 계산
           }
-          
+
           const createdDate = post.createdAt
             ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
             : "날짜 없음";
@@ -261,7 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
           html += `
             <tr>
               <td class="col-num">${postNumber}</td>
-              <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
+              <td class="col-title"><a href="./view.html?id=${docId}">${
+            post.title || "제목 없음"
+          }</a></td>
               <td class="col-author">${authorDisplay}</td>
               <td class="col-date">${createdDate}</td>
             </tr>`;
@@ -304,8 +308,9 @@ document.addEventListener("DOMContentLoaded", () => {
               : "날짜 없음";
 
             document.getElementById("post-title-view").textContent = post.title;
-            document.getElementById("post-author").textContent =
-              `작성자: ${post.authorName || post.authorEmail || "미상"}`;
+            document.getElementById("post-author").textContent = `작성자: ${
+              post.authorName || post.authorEmail || "미상"
+            }`;
             document.getElementById("post-date").textContent = `작성일: ${createdDate}`;
             document.getElementById("post-views").textContent = `조회수: ${postViews}`;
             document.getElementById("post-content-view").textContent = post.content;
@@ -314,9 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const videoContainer = document.getElementById("youtube-video-container");
 
             if (videoContainer) {
-              videoContainer.innerHTML = videoId
-                ? createYouTubeIframe(videoId)
-                : "";
+              videoContainer.innerHTML = videoId ? createYouTubeIframe(videoId) : "";
             }
 
             const editBtn = document.getElementById("edit-post-btn");
