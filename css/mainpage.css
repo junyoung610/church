@@ -1,6 +1,6 @@
 .main-menu ul {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   font-weight: 500;
   text-align: center;
@@ -9,14 +9,19 @@
 .main-menu ul li,
 .main-menu ul li a {
   display: block;
-  width: 130px;
-  height: 180px;
+  width: 250px;
 }
 
 .main-menu ul li a img {
   width: 100%;
-  height: 130px;
+  height: 250px;
   border-radius: 50%;
+}
+
+.main-menu ul li a p {
+  margin-top: 20px;
+  font-weight: 700;
+  font-size: 30px;
 }
 
 .sermons {
@@ -24,24 +29,40 @@
   justify-content: space-between;
 }
 
-.sermons-box a {
+.txt-box {
   display: flex;
   align-items: center;
-  gap: 5px;
-  width: 100%;
   font-size: 64px;
 }
 
-.sermons-box a img {
-  width: 60px;
-  height: 23px;
+.row {
+  display: block;
+  width: 140px;
+  height: 20px;
+  background: url(../img/row.png) no-repeat 50% 50%;
 }
 
-.sermons-box a b {
+.row a {
+  display: block;
+  width: 140px;
+  height: 20px;
+}
+
+.txt-box a b {
   font-weight: 800;
 }
 
+.txt-box p {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.sermons-box a {
+  margin-right: 5px;
+}
+
 .sermons-box p {
+  font-weight: 400;
   font-size: 20px;
 }
 
@@ -50,16 +71,40 @@
   height: 370px;
 }
 
+.sermons-img img {
+  border-radius: 10px;
+}
+
 @media screen and (max-width: 768px) {
   .main-menu ul {
     flex-wrap: wrap;
+    justify-content: center;
     gap: 70px;
   }
+
+  .main-menu ul li,
+  .main-menu ul li a {
+    width: 150px;
+  }
+
+  .main-menu ul li a img {
+    height: 150px;
+  }
+
+  .main-menu ul li a p {
+    font-weight: 700;
+    font-size: 20px;
+  }
+
   .sermons {
     flex-direction: column;
   }
+
+  .row {
+    width: 80px;
+  }
   .sermons-box a {
-    font-size: 32px;
+    font-size: 45px;
   }
   .sermons-img {
     width: 100%;
@@ -67,7 +112,45 @@
   }
   .sermons-box p {
     font-size: 15px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}
+@media screen and (max-width: 425px) {
+  .main-menu ul {
+    gap: 30px 55px;
+  }
+
+  .main-menu ul li,
+  .main-menu ul li a {
+    width: 100px;
+  }
+
+  .main-menu ul li a img {
+    height: 100px;
+  }
+
+  .txt-box {
+    gap: 0px;
+  }
+
+  .sermons {
+    flex-direction: column;
+  }
+
+  .row {
+    width: 75px;
+  }
+  .sermons-box a {
+    font-size: 35px;
+  }
+  .sermons-img {
+    width: 100%;
+    height: auto;
+  }
+  .sermons-box p {
+    margin-top: 5px;
+    font-size: 15px;
+    margin-bottom: 5px;
   }
 }
