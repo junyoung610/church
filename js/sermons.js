@@ -210,71 +210,69 @@ if (currentPath.includes("sermons/list.html")) {
     loadPage(1);
   });
 
-  async function loadPage(pageNumber) {
-    let query = sermonsRef.limit(POSTS_PER_PAGE);
-    if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
-      query = sermonsRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
-    }
+async function loadPage(pageNumber) {
+  let query = sermonsRef.limit(POSTS_PER_PAGE);
+  if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
+    query = sermonsRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
+  }
 
-    try {
-      const snapshot = await query.get();
-      if (!listBody) return;
+  try {
+    const snapshot = await query.get();
+    if (!listBody) return;
 
-      if (snapshot.empty) {
-        listBody.innerHTML = '<tr><td colspan="4">등록된 게시글이 없습니다.</td></tr>';
-        currentPage = pageNumber;
-        updatePaginationUI();
-        return;
-      }
-
-      // ✅ totalPosts 안전 계산
-      const allSnapshot = await sermonsRef.get();
-      let totalPosts = allSnapshot.size;
-      if (isNaN(totalPosts) || totalPosts < 0) totalPosts = 0;
-
-      totalCount = totalPosts;
-      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-      if (totalCountElement) totalCountElement.textContent = totalCount;
-
-      pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
-
-      // ✅ NaN 방지 보정
-      const startNumber = !isNaN(totalPosts)
-        ? totalPosts - (pageNumber - 1) * POSTS_PER_PAGE
-        : snapshot.size;
-
-      let html = "";
-      snapshot.forEach((doc, index) => {
-        const post = doc.data();
-        const docId = doc.id;
-
-        // 🔹 postNumber 계산 시 NaN 방지
-        let postNumber = startNumber - index;
-        if (isNaN(postNumber) || postNumber <= 0) postNumber = (pageNumber - 1) * POSTS_PER_PAGE + index + 1;
-
-        const createdDate = post.createdAt
-          ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
-          : "날짜 없음";
-        const authorDisplay = post.authorName || post.authorEmail || "미상";
-
-        html += `
-          <tr>
-            <td class="col-num">${postNumber}</td>
-            <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
-            <td class="col-author">${authorDisplay}</td>
-            <td class="col-date">${createdDate}</td>
-          </tr>`;
-      });
-
-      listBody.innerHTML = html;
+    if (snapshot.empty) {
+      listBody.innerHTML = '<tr><td colspan="4">등록된 게시글이 없습니다.</td></tr>';
       currentPage = pageNumber;
       updatePaginationUI();
-    } catch (error) {
-      console.error("게시글 로드 중 오류:", error);
-      listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
+      return;
     }
+
+    // ✅ totalPosts 안전 계산
+    const allSnapshot = await sermonsRef.get();
+    let totalPosts = Number(allSnapshot.size) || 0;
+
+    totalCount = totalPosts;
+    totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+    if (totalCountElement) totalCountElement.textContent = totalCount;
+
+    pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
+
+    // ✅ NaN 완전 방지
+    const startNumber = totalPosts > 0
+      ? totalPosts - (pageNumber - 1) * POSTS_PER_PAGE
+      : 0;
+
+    let html = "";
+    snapshot.forEach((doc, index) => {
+      const post = doc.data();
+      const docId = doc.id;
+
+      // 🔹 NaN 방지
+      let postNumber = isNaN(startNumber) ? "-" : startNumber - index;
+
+      const createdDate = post.createdAt
+        ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
+        : "날짜 없음";
+      const authorDisplay = post.authorName || post.authorEmail || "미상";
+
+      html += `
+        <tr>
+          <td class="col-num">${postNumber}</td>
+          <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
+          <td class="col-author">${authorDisplay}</td>
+          <td class="col-date">${createdDate}</td>
+        </tr>`;
+    });
+
+    listBody.innerHTML = html;
+    currentPage = pageNumber;
+    updatePaginationUI();
+  } catch (error) {
+    console.error("게시글 로드 중 오류:", error);
+    listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
   }
 }
+
 
 
   // -----------------------------------------------------
