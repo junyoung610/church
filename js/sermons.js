@@ -148,16 +148,27 @@ document.addEventListener("DOMContentLoaded", () => {
   if (currentPath.includes("sermons/list.html")) {
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
-    const totalCountElement = document.querySelector("#total-posts");
+    const totalCountElement = document.querySelector("#total-posts"); // ⚠️ 이 요소는 이제 사용되지 않습니다.
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
     const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
-    let totalCount = 0;
+    let totalCount = 0; // ⚠️ 이 변수는 이제 페이지네이션 UI를 위해 사용됩니다.
     let currentPage = 1;
     let totalPages = 0;
     let pageSnapshots = [];
+
+    // 🔥 totalCountElement에 표시하던 코드는 제거되었으나, 페이지네이션을 위해 초기 쿼리는 유지합니다.
+    sermonsRef.get().then((snapshot) => {
+      // ✅ 전체 개수 (totalCount)는 페이지네이션 계산을 위해 유지합니다.
+      totalCount = snapshot.size || 0;
+      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+
+      // ⚠️ totalCountElement에 값을 설정하는 코드는 제거되었습니다.
+      // if (totalCountElement) totalCountElement.textContent = totalCount;
+      loadPage(1);
+    });
 
     function updatePaginationUI() {
       let pagesHtml = "";
@@ -205,13 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (writePostBtn) writePostBtn.classList.toggle("hidden", !user);
     });
 
-    sermonsRef.get().then((snapshot) => {
-      totalCount = snapshot.size || 0;
-      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-      if (totalCountElement) totalCountElement.textContent = totalCount;
-      loadPage(1);
-    });
-
     async function loadPage(pageNumber) {
       let query = sermonsRef.limit(POSTS_PER_PAGE);
       if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
@@ -229,31 +233,26 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // 1. 전체 게시글 수 계산 및 갱신 (NaN 방지 강화)
-        const allSnapshot = await sermonsRef.get();
-        let totalPosts = Number(allSnapshot.size) || 0;
-
-        totalCount = totalPosts;
-        totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-        if (totalCountElement) totalCountElement.textContent = totalCount;
+        // ⚠️ [제거된 로직]: 전체 게시글 수를 다시 쿼리하고 totalPosts를 계산하던 코드 제거
+        // const allSnapshot = await sermonsRef.get();
+        // let totalPosts = Number(allSnapshot.size) || 0;
+        // totalCount = totalPosts;
+        // totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+        // if (totalCountElement) totalCountElement.textContent = totalCount;
 
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
-        // 2. 현재 페이지의 시작 번호 계산
-        const startNumber = totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
+        // 2. 게시글 번호 계산 로직 변경 (페이지 내 순번만 사용, 역순 번호 계산 제거)
+        let startNumber = (pageNumber - 1) * POSTS_PER_PAGE + 1; // 1페이지: 1, 2페이지: 11
 
         let html = "";
         snapshot.forEach((doc, index) => {
           const post = doc.data();
           const docId = doc.id;
 
-          // 3. 개별 게시글 번호 계산 및 NaN 처리 로직 적용
-          let postNumber;
-          if (isNaN(startNumber) || startNumber <= 0) {
-            postNumber = "-"; // 유효하지 않으면 '-' 표시
-          } else {
-            postNumber = startNumber - index; // 정상적인 번호 계산
-          }
+          // 3. 개별 게시글 번호는 현재 페이지의 순번으로 사용 (NaN 오류 원천 제거)
+          // ⚠️ 역순 번호를 제거했으므로, 번호는 오름차순으로 표시됩니다.
+          let postNumber = startNumber + index;
 
           const createdDate = post.createdAt
             ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
