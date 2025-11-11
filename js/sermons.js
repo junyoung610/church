@@ -236,8 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
-        // ⭐ [NaN 해결] startNumber 계산 시 totalCount가 숫자가 아닐 경우를 대비 (두 번째 방어)
-        const safeTotalCount = isNaN(totalCount) ? 0 : totalCount;
+        const totalPosts = totalCount || (await sermonsRef.get()).size; 
         const startNumber = safeTotalCount - (pageNumber - 1) * POSTS_PER_PAGE;
 
         let html = "";
