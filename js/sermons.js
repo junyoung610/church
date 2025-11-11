@@ -250,9 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const post = doc.data();
           const docId = doc.id;
 
-          // 3. 개별 게시글 번호는 현재 페이지의 순번으로 사용 (NaN 오류 원천 제거)
-          // ⚠️ 역순 번호를 제거했으므로, 번호는 오름차순으로 표시됩니다.
+          // 3. 개별 게시글 번호를 페이지 내 순번으로 설정
+          // 이전 로직에서 NaN을 유발하는 복잡한 계산을 제거하고 순번만 사용
           let postNumber = startNumber + index;
+          // 만약 1, 2, 3... 순번이 싫다면 아래처럼 DB 문서 ID의 짧은 부분을 사용하거나 '-'로 표시할 수 있습니다.
+          // let postNumber = index + 1; // 현재 페이지에서 1부터 시작
+          // let postNumber = '-'; // 번호 표시 자체를 포기
 
           const createdDate = post.createdAt
             ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
