@@ -143,132 +143,139 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------------------------------
-  // III. 목록 페이지 (sermons/list.html)
-  // -----------------------------------------------------
-  if (currentPath.includes("sermons/list.html")) {
-    const POSTS_PER_PAGE = 10;
-    const paginationContainer = document.querySelector(".pagination");
-    const totalCountElement = document.querySelector("#total-posts");
-    const listBody = document.getElementById("notice-list-tbody");
-    const writePostBtn = document.querySelector("#write-post-btn");
+// III. 목록 페이지 (sermons/list.html)
+// -----------------------------------------------------
+if (currentPath.includes("sermons/list.html")) {
+  const POSTS_PER_PAGE = 10;
+  const paginationContainer = document.querySelector(".pagination");
+  const totalCountElement = document.querySelector("#total-posts");
+  const listBody = document.getElementById("notice-list-tbody");
+  const writePostBtn = document.querySelector("#write-post-btn");
 
-    const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
+  const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
-    // ✅ NaN 방지용 초기화
-    let totalCount = 0;
-    let currentPage = 1;
-    let totalPages = 0;
-    let pageSnapshots = [];
+  let totalCount = 0;
+  let currentPage = 1;
+  let totalPages = 0;
+  let pageSnapshots = [];
 
-    function updatePaginationUI() {
-      let pagesHtml = "";
-      for (let i = 1; i <= totalPages; i++) {
-        pagesHtml += `<a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a>`;
-      }
-
-      if (paginationContainer) {
-        paginationContainer.innerHTML = `
-          <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
-          ${pagesHtml}
-          <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
-        `;
-
-        paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const page = parseInt(e.target.dataset.page);
-            if (page !== currentPage) loadPage(page);
-          });
-        });
-
-        const prevBtn = paginationContainer.querySelector(".prev");
-        const nextBtn = paginationContainer.querySelector(".next");
-
-        if (prevBtn) {
-          prevBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (currentPage > 1) loadPage(currentPage - 1);
-          });
-        }
-
-        if (nextBtn) {
-          nextBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (currentPage < totalPages) loadPage(currentPage + 1);
-          });
-        }
-      }
+  function updatePaginationUI() {
+    let pagesHtml = "";
+    for (let i = 1; i <= totalPages; i++) {
+      pagesHtml += `<a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a>`;
     }
 
-    auth.onAuthStateChanged((user) => {
-      if (writePostBtn) {
-        writePostBtn.classList.toggle("hidden", !user);
-      }
-    });
+    if (paginationContainer) {
+      paginationContainer.innerHTML = `
+        <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
+        ${pagesHtml}
+        <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
+      `;
 
-    sermonsRef.get().then((snapshot) => {
-      totalCount = snapshot.size || 0;
-      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-      if (totalCountElement) totalCountElement.textContent = totalCount;
-      loadPage(1);
-    });
-
-    async function loadPage(pageNumber) {
-      let query = sermonsRef.limit(POSTS_PER_PAGE);
-      if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
-        query = sermonsRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
-      }
-
-      try {
-        const snapshot = await query.get();
-        if (!listBody) return;
-
-        if (snapshot.empty) {
-          listBody.innerHTML = '<tr><td colspan="4">등록된 게시글이 없습니다.</td></tr>';
-          currentPage = pageNumber;
-          updatePaginationUI();
-          return;
-        }
-
-         const allSnapshot = await sermonsRef.get();
-    const totalPosts = allSnapshot.size || 0;
-    totalCount = totalPosts;
-    totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-    if (totalCountElement) totalCountElement.textContent = totalCount;
-
-
-        pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
-
-         const startNumber = totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
-
-        let html = "";
-        snapshot.forEach((doc, index) => {
-          const post = doc.data();
-          const docId = doc.id;
-          const postNumber = Number(startNumber) - Number(index);
-          const createdDate = post.createdAt
-            ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
-            : "날짜 없음";
-          const authorDisplay = post.authorName || post.authorEmail || "미상";
-
-          html += `
-            <tr>
-              <td class="col-num">${isNaN(postNumber) ? "-" : postNumber}</td>
-              <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
-              <td class="col-author">${authorDisplay}</td>
-              <td class="col-date">${createdDate}</td>
-            </tr>`;
+      paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const page = parseInt(e.target.dataset.page);
+          if (page !== currentPage) loadPage(page);
         });
+      });
 
-        listBody.innerHTML = html;
-        currentPage = pageNumber;
-        updatePaginationUI();
-      } catch (error) {
-        console.error("게시글 로드 중 오류:", error);
-        listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
+      const prevBtn = paginationContainer.querySelector(".prev");
+      const nextBtn = paginationContainer.querySelector(".next");
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (currentPage > 1) loadPage(currentPage - 1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (currentPage < totalPages) loadPage(currentPage + 1);
+        });
       }
     }
   }
+
+  auth.onAuthStateChanged((user) => {
+    if (writePostBtn) writePostBtn.classList.toggle("hidden", !user);
+  });
+
+  sermonsRef.get().then((snapshot) => {
+    totalCount = snapshot.size || 0;
+    totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+    if (totalCountElement) totalCountElement.textContent = totalCount;
+    loadPage(1);
+  });
+
+  async function loadPage(pageNumber) {
+    let query = sermonsRef.limit(POSTS_PER_PAGE);
+    if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
+      query = sermonsRef.startAfter(pageSnapshots[pageNumber - 2]).limit(POSTS_PER_PAGE);
+    }
+
+    try {
+      const snapshot = await query.get();
+      if (!listBody) return;
+
+      if (snapshot.empty) {
+        listBody.innerHTML = '<tr><td colspan="4">등록된 게시글이 없습니다.</td></tr>';
+        currentPage = pageNumber;
+        updatePaginationUI();
+        return;
+      }
+
+      // ✅ totalPosts 안전 계산
+      const allSnapshot = await sermonsRef.get();
+      let totalPosts = allSnapshot.size;
+      if (isNaN(totalPosts) || totalPosts < 0) totalPosts = 0;
+
+      totalCount = totalPosts;
+      totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+      if (totalCountElement) totalCountElement.textContent = totalCount;
+
+      pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
+
+      // ✅ NaN 방지 보정
+      const startNumber = !isNaN(totalPosts)
+        ? totalPosts - (pageNumber - 1) * POSTS_PER_PAGE
+        : snapshot.size;
+
+      let html = "";
+      snapshot.forEach((doc, index) => {
+        const post = doc.data();
+        const docId = doc.id;
+
+        // 🔹 postNumber 계산 시 NaN 방지
+        let postNumber = startNumber - index;
+        if (isNaN(postNumber) || postNumber <= 0) postNumber = (pageNumber - 1) * POSTS_PER_PAGE + index + 1;
+
+        const createdDate = post.createdAt
+          ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
+          : "날짜 없음";
+        const authorDisplay = post.authorName || post.authorEmail || "미상";
+
+        html += `
+          <tr>
+            <td class="col-num">${postNumber}</td>
+            <td class="col-title"><a href="./view.html?id=${docId}">${post.title || "제목 없음"}</a></td>
+            <td class="col-author">${authorDisplay}</td>
+            <td class="col-date">${createdDate}</td>
+          </tr>`;
+      });
+
+      listBody.innerHTML = html;
+      currentPage = pageNumber;
+      updatePaginationUI();
+    } catch (error) {
+      console.error("게시글 로드 중 오류:", error);
+      listBody.innerHTML = '<tr><td colspan="4">게시글 로드 중 오류가 발생했습니다.</td></tr>';
+    }
+  }
+}
+
 
   // -----------------------------------------------------
   // IV. 상세 보기 페이지 (sermons/view.html)
