@@ -142,35 +142,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // sermons.js (SECTION III. 목록 페이지, loadPage 함수 부분만 확인하세요)
+
+  // ... (중략: SECTION II 까지는 이전과 동일)
+
   // -----------------------------------------------------
   // III. 목록 페이지 (sermons/list.html)
   // -----------------------------------------------------
   if (currentPath.includes("sermons/list.html")) {
     const POSTS_PER_PAGE = 10;
     const paginationContainer = document.querySelector(".pagination");
-    const totalCountElement = document.querySelector("#total-posts"); // ⚠️ 이 요소는 이제 사용되지 않습니다.
+    const totalCountElement = document.querySelector("#total-posts");
     const listBody = document.getElementById("notice-list-tbody");
     const writePostBtn = document.querySelector("#write-post-btn");
 
     const sermonsRef = db.collection("sermons").orderBy("createdAt", "desc");
 
-    let totalCount = 0; // ⚠️ 이 변수는 이제 페이지네이션 UI를 위해 사용됩니다.
+    let totalCount = 0;
     let currentPage = 1;
     let totalPages = 0;
     let pageSnapshots = [];
 
-    // 🔥 totalCountElement에 표시하던 코드는 제거되었으나, 페이지네이션을 위해 초기 쿼리는 유지합니다.
+    // [중요] 페이지네이션을 위한 초기 전체 카운트 로직은 유지
     sermonsRef.get().then((snapshot) => {
-      // ✅ 전체 개수 (totalCount)는 페이지네이션 계산을 위해 유지합니다.
       totalCount = snapshot.size || 0;
       totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-
-      // ⚠️ totalCountElement에 값을 설정하는 코드는 제거되었습니다.
-      // if (totalCountElement) totalCountElement.textContent = totalCount;
+      if (totalCountElement) totalCountElement.textContent = totalCount; // 총 개수 표시 로직은 유지 (NaN 문제와 별개)
       loadPage(1);
     });
 
     function updatePaginationUI() {
+      // ... (페이지네이션 UI 로직은 생략/유지)
       let pagesHtml = "";
       for (let i = 1; i <= totalPages; i++) {
         pagesHtml += `<a href="#" class="${
@@ -180,10 +182,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (paginationContainer) {
         paginationContainer.innerHTML = `
-          <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
-          ${pagesHtml}
-          <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
-        `;
+        <a href="#" class="prev ${currentPage === 1 ? "disabled" : ""}">이전</a>
+        ${pagesHtml}
+        <a href="#" class="next ${currentPage === totalPages ? "disabled" : ""}">다음</a>
+      `;
 
         paginationContainer.querySelectorAll("[data-page]").forEach((btn) => {
           btn.addEventListener("click", (e) => {
@@ -216,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (writePostBtn) writePostBtn.classList.toggle("hidden", !user);
     });
 
+    // ----------------------------------------------------------------------
+    // 🔥 loadPage 함수: 번호 계산 로직을 가장 단순하게 변경
+    // ----------------------------------------------------------------------
     async function loadPage(pageNumber) {
       let query = sermonsRef.limit(POSTS_PER_PAGE);
       if (pageNumber > 1 && pageSnapshots[pageNumber - 2]) {
@@ -233,29 +238,23 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // ⚠️ [제거된 로직]: 전체 게시글 수를 다시 쿼리하고 totalPosts를 계산하던 코드 제거
-        // const allSnapshot = await sermonsRef.get();
-        // let totalPosts = Number(allSnapshot.size) || 0;
-        // totalCount = totalPosts;
-        // totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-        // if (totalCountElement) totalCountElement.textContent = totalCount;
+        // ✅ [중요] loadPage 내부에서 전체 카운트를 다시 조회하는 비효율적인 코드를 제거했습니다.
+        // const allSnapshot = await sermonsRef.get(); // 제거
+        // let totalPosts = Number(allSnapshot.size) || 0; // 제거
 
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
-        // 2. 게시글 번호 계산 로직 변경 (페이지 내 순번만 사용, 역순 번호 계산 제거)
-        let startNumber = (pageNumber - 1) * POSTS_PER_PAGE + 1; // 1페이지: 1, 2페이지: 11
+        // 2. 게시글 번호 계산: 페이지 내 순번으로만 사용 (가장 안전한 방법)
+        let startNumber = (pageNumber - 1) * POSTS_PER_PAGE + 1;
 
         let html = "";
         snapshot.forEach((doc, index) => {
           const post = doc.data();
           const docId = doc.id;
 
-          // 3. 개별 게시글 번호를 페이지 내 순번으로 설정
-          // 이전 로직에서 NaN을 유발하는 복잡한 계산을 제거하고 순번만 사용
+          // 3. 개별 게시글 번호는 현재 페이지의 순번 + index로 설정
+          // 이 계산에는 NaN을 유발할 수 있는 변수가 전혀 없습니다.
           let postNumber = startNumber + index;
-          // 만약 1, 2, 3... 순번이 싫다면 아래처럼 DB 문서 ID의 짧은 부분을 사용하거나 '-'로 표시할 수 있습니다.
-          // let postNumber = index + 1; // 현재 페이지에서 1부터 시작
-          // let postNumber = '-'; // 번호 표시 자체를 포기
 
           const createdDate = post.createdAt
             ? new Date(post.createdAt.toDate()).toLocaleDateString("ko-KR")
@@ -263,14 +262,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const authorDisplay = post.authorName || post.authorEmail || "미상";
 
           html += `
-            <tr>
-              <td class="col-num">${postNumber}</td>
-              <td class="col-title"><a href="./view.html?id=${docId}">${
+          <tr>
+            <td class="col-num">${postNumber}</td>
+            <td class="col-title"><a href="./view.html?id=${docId}">${
             post.title || "제목 없음"
           }</a></td>
-              <td class="col-author">${authorDisplay}</td>
-              <td class="col-date">${createdDate}</td>
-            </tr>`;
+            <td class="col-author">${authorDisplay}</td>
+            <td class="col-date">${createdDate}</td>
+          </tr>`;
         });
 
         listBody.innerHTML = html;
@@ -282,6 +281,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   } // <-- III. 목록 페이지 (sermons/list.html) if문의 닫는 중괄호
+
+  // ... (이하 SECTION IV는 이전과 동일)
 
   // -----------------------------------------------------
   // IV. 상세 보기 페이지 (sermons/view.html)
