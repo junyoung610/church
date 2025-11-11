@@ -230,20 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
+         const allSnapshot = await sermonsRef.get();
+    const totalPosts = allSnapshot.size || 0;
+    totalCount = totalPosts;
+    totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+    if (totalCountElement) totalCountElement.textContent = totalCount;
+
+
         pageSnapshots[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
 
-        let totalPosts = Number(totalCount);
-        if (isNaN(totalPosts) || totalPosts <= 0) {
-          const allSnapshot = await sermonsRef.get();
-          totalPosts = allSnapshot.size || 0;
-          totalCount = totalPosts;
-          totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-          if (totalCountElement) totalCountElement.textContent = totalCount;
-        }
-
-        const startNumber = isNaN(totalPosts)
-          ? 0
-          : totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
+         const startNumber = totalPosts - (pageNumber - 1) * POSTS_PER_PAGE;
 
         let html = "";
         snapshot.forEach((doc, index) => {
